@@ -11,14 +11,14 @@ const clock = Clock.init(timeSpeed);
 // setInterval(()=>{
 //     console.log(`${clock.phase} - ${clock.now.format("dddd, MMMM Do YYYY, H:mm:ss")}`);
 //     },1000);
-
-let sleepTime = 5;
-console.log(`taking a nap of ${sleepTime} hours, now are ${clock.now.format("dddd, MMMM Do YYYY, H:mm:ss")}`);
-setTimeout(()=>{
-    console.log(`waking up now at ${clock.now.format("dddd, MMMM Do YYYY, H:mm:ss")}`);
-}, clock.milliseconds(sleepTime, 'hours',[0.2,-0.2]));
-
-
+//
+// let sleepTime = 5;
+// console.log(`taking a nap of ${sleepTime} hours, now are ${clock.now.format("dddd, MMMM Do YYYY, H:mm:ss")}`);
+// setTimeout(()=>{
+//     console.log(`waking up now at ${clock.now.format("dddd, MMMM Do YYYY, H:mm:ss")}`);
+// }, clock.milliseconds(sleepTime, 'hours',[0.2,-0.2]));
+//
+//
 
 
 
