@@ -7,7 +7,7 @@
 
 
 // todo list of actions
-// type, such as mobility, socialization
+// type: ['physical','self','basic','socialization','culture','health']
 // rate to be selected in the daily list,
 // e.g rate = 1 daily mandatory activity, such as sleeping
 //      rate = 0.7 (5/7) workday activity such as working
@@ -23,9 +23,7 @@
 //       weight: value to remove to the severity or permanence of a condition
 //       type: category of benefit
 // duration:  duration in hours and errors (array of rates representing how much the duration can deviate [0.1,-0.1])
-const actions = {
-    //todo https://ec.europa.eu/eip/ageing/sites/eipaha/files/results_attachments/city4age_d2.06_riskmodel_v2.0.pdf
-};
+
 
 
 exports.actions = ()=>{
@@ -41,15 +39,50 @@ exports.acting = ()=>{
 // agents get the daily list and choose which actions to carry on and which not
 class Actions {
     DAY = 24;
+    ACTIONS = {
+        //todo https://ec.europa.eu/eip/ageing/sites/eipaha/files/results_attachments/city4age_d2.06_riskmodel_v2.0.pdf
+    };
+    _checkRate = checkRate;
+    _contingencyCost = contingencyCost;
     constructor (){
 
     }
-    remind({age,conditions}){
-        // todo calc list of actions considering conditions and age
-        // todo apply risks and benefit factors considering conditions and age
-        // todo modify duration and errors considering conditions and age
-        // todo return action with new rates and errors
+    // calc list of suggested actions of the day
+    static remind({age,conditions}){
+        let list = this.list.reduce((partial,action)=>{
+            // check if it falls in the list
+            // modifier 1 add rate, -1 remove rate
+            let modifier = 0;
+            switch(action.type){
+                case 'physical':
+                    modifier = 1;
+                    break;
+                case 'self':
+                    modifier = 0;
+                    break;
+                case 'socialization':
+                    modifier = -1;
+                    break;
+                case 'culture':
+                    modifier = -1;
+                    break;
+                case 'health':
+                    modifier = 1;
+                    break;
+                default: // basic
+                    modifier = 1;
+            }
+            if(!this._checkRate(rate,{age,conditions},modifier)){
+                return partial;
+            }
+            // add the action to the list
+            partial.add(Object.assign({},action));
+            return partial;
+        },new Set());
+        // return list of actions
+        return list;
     }
+    static list(){return ACTIONS};
 }
 
 
@@ -58,23 +91,26 @@ class Actions {
 // outcomes: conditions resulting from carrying out or not a specific action,
 // considering the agent's state
 class Acting {
-    DAY = 24;
+    // 24 hours a day
+    static DAY = 24;
+    static _checkRate = checkRate;
+    static _contingencyCost = contingencyCost;
     constructor (){
 
     }
-    outcomes({actions,skips},{age, conditions}){
+    static outcomes({acts,skips},{age, conditions}){
         // todo evaluate acts
-        let {furtherSkips,positive} = this.acting(actions,{age,conditions});
+        let {furtherSkips,positive} = this.acting(acts,{age,conditions});
         // todo evaluate skips
         let {negative} = this.skipping(skips.concat(furtherSkips), {age,conditions});
         // todo calc new user state
         return {positive,negative};
     }
-    acting(actions, {age, conditions} ){
+    static acting(acts, {age, conditions} ){
         // calc outcomes and further skips based on the calc of durations and benefits
-        let {positive,furtherSkips} = actions.reduce((partial,action)=>{
+        let {positive,furtherSkips} = acts.reduce((partial,action)=>{
                 // check if there is still time to act
-                let duration = this._duration(action,{age,condition});
+                let duration = this._duration(action,{age,conditions});
                 if(partial.time + duration > this.DAY){
                     // no time to carry out this action
                     return partial.furtherSkips.push(action);
@@ -103,14 +139,12 @@ class Acting {
                 furtherSkips:[],
                 time:0
             } );
-
+        // returns positive outcomes and actions that had been skipped
         return {positive,furtherSkips};
     }
 
-    skipping(skips, {age, conditions}){
-        // todo calc risk rate
-        // todo calc weight
-        // todo return {duration = 0, {outcomes: Map({typelabel: weight}) }
+    static skipping(skips, {age, conditions}){
+        // calc the risks related to the skips (action not performed)
         let outcomes = skips.reduce((partial,skip)=>{
                 // calc of new risks
                 let outcomes = this._outcomes(skip,'risks',{age,conditions});
@@ -129,11 +163,11 @@ class Acting {
                 }
                 return partial;
             },new Map());
-
+        // returns negative outcomes
         return {negative:outcomes};
     }
 
-    _duration({duration:{hours,errors}},{age,conditions}){
+    static _duration({duration:{hours,errors}},{age,conditions}){
         let duration = hours;
         let error = errors[Math.floor(Math.random()*errors.length)];
         // increase the error considering age and conditions (always slower, thus error is abs)
@@ -141,37 +175,74 @@ class Acting {
         return duration * error ;
     }
 
-    _outcomes({rate,weight,type},decision,{age,conditions}){
+    static _outcomes({rate,weight,type},decision,{age,conditions}){
         // calc the outcomes
-        let contingencyCosts = this._ageingCost(age) + this._conditionsCost(conditions);
+        let contingencyCosts = this._contingencyCost(age,conditions);
 
         // default no outcomes
         let outcome = {};
         outcome[type] = 0;
 
+        let modifier = 1;
+
         // if benefits then conditions and age lower the benefit and reduce the rate
         if(decision === 'benefits'){
             // make it a negative value to subtract to benefits
-            contingencyCosts = -contingencyCosts;
+            modifier = -1;
         }
         // if over the rate, then no outcome
-        if(Math.random() > rate + (contingencyCosts * rate) ){
+        if(!this._checkRate(rate,{age,conditions}, modifier) ){
             return outcome;
         }
         // else, update weight of outcome
-        outcome[type] = weight + (contingencyCosts * weight);
+        outcome[type] = weight + (contingencyCosts * weight * modifier);
 
+        // return outcome {type:weight}
         return outcome;
     }
+}
 
-    static _ageingCost(age){
-        const threshold = 50;
-        // if age > threshold then 1% each year above the threshold
-        return (age - threshold) > 0 ? (age - threshold)/100 : 0;
+
+
+
+// support functions
+// logic of ageing and conditions
+// rate (eg. 0.1, {age,conditions} features of user state and arrays
+// modifier: 1, -1 or 0 change the logic of adding or removing contingency cost from rate
+function checkRate(rate,{age,conditions},modifier = 1){
+    if(isNaN(modifier)){modifier = 1;}
+    if(isNaN(rate)){return false;}
+    // calc rate
+    if( Math.random() > (rate + (contingencyCost(age,conditions) * rate * modifier) ) ){
+        return false;
     }
-    static _conditionsCost(conditions){
-        // todo improve
-        // 1% each condition
-        return conditions.length/100;
+    return true;
+}
+function contingencyCost(age = 0,conditions = 0) {
+    return ageingCost(age) + conditionsCost(conditions);
+}
+
+function ageingCost(age){
+    if(isNaN(age)){return 0;}
+
+    // todo improve with a non-linear function
+    const threshold = 50;
+    // if age > threshold then 1% each year above the threshold
+    return (age - threshold) > 0 ? (age - threshold)/100 : 0;
+}
+function conditionsCost(conditions){
+    let num = 0;
+    // managing different types set, array, maps
+    if(Array.isArray(conditions)){
+        num += conditions.length;
+    } else if(conditions instanceof Set){
+        num += conditions.size;
+    } else if(conditions instanceof Map){
+        num += conditions.size;
+    } else if(!isNaN(conditions)){
+        num += parseFloat(conditions);
     }
+    // todo improve with a non-linear function
+    // 1% each condition
+    return num/100;
 }
