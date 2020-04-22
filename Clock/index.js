@@ -42,7 +42,8 @@ class Clock {
         return this.phases.get( h);
     }
     age(year) {
-        if(parseInt(year) || isNaN(year)){return false;}
+        if(!parseInt(year) || isNaN(year)){return false;}
+        // console.log('clock',year,this.now.get('year'));
         return parseInt( this.now.get('year') ) - parseInt(year);
     }
     // time interval converted to the time of the simulation,

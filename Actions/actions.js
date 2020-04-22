@@ -17,7 +17,7 @@
 //       type: category of benefit
 // duration:  duration in hours and errors (array of rates representing how much the duration can deviate [0.1,-0.1])
 
-exports.actions = [
+exports.get = ()=>[
   {
     label:'sleep',
     type:'health',

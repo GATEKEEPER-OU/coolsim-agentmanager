@@ -1,8 +1,8 @@
-const ACTIONS = require('./actions');
+const listOfActions = require('./actions');
 const Clock = require('../Clock');
 
 
-exports.actions = (yearOfBirth,clock)=>{
+exports.init = (yearOfBirth,clock)=>{
     return new Actions(yearOfBirth,clock);
 };
 
@@ -13,21 +13,23 @@ exports.actions = (yearOfBirth,clock)=>{
 
 class Actions {
     DAY = 24;
-    actions = ACTIONS;
 
     constructor (yearOfBirth,clock){
         this.clock = clock;
         this.BIRTH = yearOfBirth;
+        this.ACTIONS = listOfActions.get();
     }
     get age(){
         return this.clock.age(this.BIRTH);
     }
-    static get list(){return this.actions};
+    get list(){
+        return this.ACTIONS;
+    };
 
 
     // calc list of suggested actions of the day
     remind(conditions){
-        let list = this.list.reduce((partial,action)=>{
+        return this.list.reduce((partial,action)=>{
             // check if it falls in the list
             // modifier 1 add rate, -1 remove rate
             let modifier = 0;
@@ -50,23 +52,33 @@ class Actions {
                 default: // basic
                     modifier = 1;
             }
-            if(!this._checkRate(action.rate,{age,conditions},modifier)){
+            if(!this._checkRate(action.rate,conditions,modifier)){
                 return partial;
             }
             // add the action to the list
             partial.add(Object.assign({},action));
             return partial;
         },new Set());
-        // return list of actions
-        return list;
     }
 
     // calc of outcomes
-    outcomes({acts,skips}, conditions){
+    outcomes(acts = [],skips = [], conditions = []){
+        if( acts instanceof Set){
+            acts = Array.from(acts);
+        } else if( acts instanceof Map ){
+            acts = Array.from(acts)
+        }
+        if( skips instanceof Set){
+            skips = Array.from(skips);
+        } else if( acts instanceof Map ){
+            skips = Array.from(skips)
+        }
+
+
         // evaluate acts
-        let {furtherSkips,positive, time} = this._acting(acts,{age,conditions});
+        let {furtherSkips,positive, time} = this._acting(acts, conditions);
         // evaluate skips
-        let {negative} = this._skipping(skips.concat(furtherSkips), {age,conditions});
+        let {negative} = this._skipping(skips.concat(furtherSkips), conditions);
         // return outcome and time spent
         return {positive,negative,time};
     }
@@ -84,7 +96,7 @@ class Actions {
                 // update spent time
                 partial.time += duration;
                 // calc of benefits
-                let outcomes = this._outcomes(action,'benefits', conditions);
+                let outcomes = this._outcomes(action.benefit,'benefits', conditions);
                 // update outcomes
                 // for each type of benefit
                 for(let outcome in outcomes){
@@ -114,19 +126,19 @@ class Actions {
         // calc the risks related to the skips (action not performed)
         let outcomes = skips.reduce((partial,skip)=>{
                 // calc of new risks
-                let outcomes = this._outcomes(skip, 'risks', conditions);
+                let actionOutcomes = this._outcomes(skip.risk, 'risk', conditions);
                 // update outcomes
                 // for each type of benefit
-                for(let outcome in outcomes){
+                for(let outcome in actionOutcomes){
                     // benefit value
-                    let value = outcomes[outcome];
+                    let value = actionOutcomes[outcome];
                     // if there is already a key in the map
-                    if(partial.negative.has(outcome) ){
+                    if(partial.has(outcome) ){
                         // add prior value to the current one
-                        value += partial.negative.get(outcome);
+                        value += partial.get(outcome);
                     }
                     // update value of the type of outcome
-                    partial.negative.set(outcome,value);
+                    partial.set(outcome,value);
                 }
                 return partial;
             },new Map());
@@ -135,12 +147,12 @@ class Actions {
     }
 
     // calculate duration
-    static _duration({duration:{hours,errors}},conditions){
+    _duration({duration:{hours,errors}},conditions){
         let duration = hours;
         let error = errors[Math.floor(Math.random()*errors.length)];
         // increase the error considering age and conditions (always slower, thus error is abs)
         error += (Math.abs(error) * (this._ageingCost() + this._conditionsCost(conditions)) );
-        return duration * error ;
+        return duration + error ;
     }
 
     // calculate rate of an outcome
@@ -155,7 +167,7 @@ class Actions {
         let modifier = 1;
 
         // if benefits then conditions and age lower the benefit and reduce the rate
-        if(decision === 'benefits'){
+        if(decision === 'benefit'){
             // make it a negative value to subtract to benefits
             modifier = -1;
         }
@@ -165,7 +177,7 @@ class Actions {
         }
         // else, update weight of outcome
         outcome[type] = weight + (cost * weight * modifier);
-
+        console.log(outcome,type,weight,cost,modifier);
         // return outcome {type:weight}
         return outcome;
     }
@@ -194,7 +206,7 @@ class Actions {
         // if age > threshold then 1% each year above the threshold
         return (this.age - threshold) > 0 ? (this.age - threshold)/100 : 0;
     }
-    static _conditionsCost(conditions){
+    _conditionsCost(conditions){
         let num = 0;
         // managing different types set, array, maps
         if(Array.isArray(conditions)){

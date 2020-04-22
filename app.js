@@ -1,5 +1,5 @@
 const Clock = require('./Clock');
-
+const Actions = require('./Actions');
 
 
 // init of the simulation clock
@@ -19,6 +19,20 @@ const clock = Clock.init(timeSpeed);
 // }, clock.milliseconds(sleepTime, 'hours',[0.2,-0.2]));
 //
 //
+
+// todo tests
+let testClock = Clock.init(3600);
+let actions = Actions.init(1984,testClock);
+
+
+console.log(actions.list);
+console.log(actions.age);
+
+let reminders = actions.remind([]);
+
+// console.log(reminders);
+
+console.log(actions.outcomes(reminders,[],[]) );
 
 
 
