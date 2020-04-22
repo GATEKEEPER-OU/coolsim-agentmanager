@@ -41,6 +41,10 @@ class Clock {
         let h = (this.now.get('hours') +1) % 24;
         return this.phases.get( h);
     }
+    age(year) {
+        if(parseInt(year) || isNaN(year)){return false;}
+        return parseInt( this.now.get('year') ) - parseInt(year);
+    }
     // time interval converted to the time of the simulation,
     // e.g. 5 hours = (5*3600s / ratio) * 1000 => sleep interval in milliseconds
     // errors is used to introduce an error
