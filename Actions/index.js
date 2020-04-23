@@ -74,9 +74,9 @@ class Actions {
             skips = Array.from(skips)
         }
 
-
         // evaluate acts
         let {furtherSkips,positive, time} = this._acting(acts, conditions);
+
         // evaluate skips
         let {negative} = this._skipping(skips.concat(furtherSkips), conditions);
         // return outcome and time spent
@@ -86,17 +86,19 @@ class Actions {
     // internal methods
     _acting(acts, conditions ){
         // calc outcomes and further skips based on the calc of durations and benefits
-        let results = acts.reduce((partial, action)=>{
+        return acts.reduce((partial, action)=>{
                 // check if there is still time to act
                 let duration = this._duration(action,conditions);
                 if(partial.time + duration > this.DAY){
+
                     // no time to carry out this action
-                    return partial.furtherSkips.push(action);
+                    partial.furtherSkips.push(action);
+                    return partial;
                 }
                 // update spent time
                 partial.time += duration;
                 // calc of benefits
-                let outcomes = this._outcomes(action.benefit,'benefits', conditions);
+                let outcomes = this._outcomes(action.benefits,'benefits', conditions);
                 // update outcomes
                 // for each type of benefit
                 for(let outcome in outcomes){
@@ -117,16 +119,14 @@ class Actions {
                 furtherSkips:[],
                 time:0
             } );
-        // returns positive outcomes and actions that had been skipped
-        return results;
     }
 
     // evaluate outcomes of skipped actions
-    _skipping(skips, conditions){
+    _skipping(skips, conditions = []){
         // calc the risks related to the skips (action not performed)
         let outcomes = skips.reduce((partial,skip)=>{
                 // calc of new risks
-                let actionOutcomes = this._outcomes(skip.risk, 'risk', conditions);
+                let actionOutcomes = this._outcomes(skip.risks, 'risks', conditions);
                 // update outcomes
                 // for each type of benefit
                 for(let outcome in actionOutcomes){
@@ -156,30 +156,30 @@ class Actions {
     }
 
     // calculate rate of an outcome
-    _outcomes({rate,weight,type},decision,conditions){
-        // calc the outcomes
-        let cost = this._contingencyCost(conditions);
-
-        // default no outcomes
-        let outcome = {};
-        outcome[type] = 0;
-
+    _outcomes(events,decision,conditions){
+        // set modifier
         let modifier = 1;
 
         // if benefits then conditions and age lower the benefit and reduce the rate
-        if(decision === 'benefit'){
+        if(decision === 'benefits'){
             // make it a negative value to subtract to benefits
             modifier = -1;
         }
-        // if over the rate, then no outcome
-        if(!this._checkRate(rate, conditions, modifier) ){
-            return outcome;
-        }
-        // else, update weight of outcome
-        outcome[type] = weight + (cost * weight * modifier);
-        console.log(outcome,type,weight,cost,modifier);
-        // return outcome {type:weight}
-        return outcome;
+
+        //calc returns array [{type:weight}, ... ]
+        return events.reduce((partial,{rate,weight,type})=>{
+            // if over the rate, then no outcome
+            if(!this._checkRate(rate, conditions, modifier) ){
+                return partial;
+            }
+
+            let contingencyCost = this._contingencyCost(conditions);
+            let cost = weight + (contingencyCost * weight * modifier);
+            // else, update weight of outcome
+            partial[type] = !partial[type] ? cost : partial[type] + cost;
+
+            return partial;
+        },{});
     }
 
 

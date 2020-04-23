@@ -18,80 +18,87 @@
 // duration:  duration in hours and errors (array of rates representing how much the duration can deviate [0.1,-0.1])
 
 exports.get = ()=>[
-  {
-    label:'sleep',
-    type:'health',
-    rate:1,
-    risk:{
-      rate:0.3,
-      weight:0.1,
-      type:'health'
+    // dailies
+    {
+        label:'sleep',
+        type:'health',
+        rate:1,
+        risks:[ { rate:0.3, weight:0.1, type:'health' } ],
+        benefits:[ { rate:0.05, weight:0.05, type:'health' } ],
+        duration:{ hours:8, errors:[-0.3,0.2] }
     },
-    benefit:{
-      rate:0.05,
-      weight:0.05,
-      type:'health'
+    {
+        label:'rest',
+        type:'health',
+        rate:1,
+        risks:[ { rate:0.3, weight:0.1, type:'health' } ],
+        benefits:[ { rate:0.05, weight:0.05, type:'health' } ],
+        duration:{ hours:8, errors:[-0.3,0.2] }
     },
-    duration:{
-      hours:8,
-      errors:[-0.3,0.2]
+    {
+        label:'eat',
+        type:'self',
+        rate:1,
+        risks:[ { rate:0.3, weight:0.1, type:'health' } ],
+        benefits:[ { rate:0.05, weight:0.05, type:'health' } ],
+        duration:{ hours:8, errors:[-0.3,0.2] }
+    },
+    {
+        label:'toilet',
+        type:'self',
+        rate:1,
+        risks:[ { rate:0.3, weight:0.1, type:'health' } ],
+        benefits:[ { rate:0.05, weight:0.05, type:'health' } ],
+        duration:{ hours:8, errors:[-0.3,0.2] }
+    },
+    {
+        label:'bathing',
+        type:'self',
+        rate:1,
+        risks:[ { rate:0.3, weight:0.1, type:'health' } ],
+        benefits:[ { rate:0.05, weight:0.05, type:'health' } ],
+        duration:{ hours:8, errors:[-0.3,0.2] }
+    },
+    {
+        label:'going_out',
+        type:'self',
+        rate:1,
+        risks:[ { rate:0.3, weight:0.1, type:'health' } ],
+        benefits:[ { rate:0.05, weight:0.05, type:'health' } ],
+        duration:{ hours:8, errors:[-0.3,0.2] }
+    },
+    {
+        label:'cook',
+        type:'self',
+        rate:1,
+        risks:[ { rate:0.3, weight:0.1, type:'health' } ],
+        benefits:[ { rate:0.05, weight:0.05, type:'health' } ],
+        duration:{ hours:8, errors:[-0.3,0.2] }
+    },
+    {
+        label:'grooming',
+        type:'self',
+        rate:1,
+        risks:[ { rate:0.3, weight:0.1, type:'health' } ],
+        benefits:[ { rate:0.05, weight:0.05, type:'health' } ],
+        duration:{ hours:8, errors:[-0.3,0.2] }
+    },
+    {
+        label:'housekeeping',
+        type:'basic',
+        rate:0.7,
+        risks:[ { rate:0.3, weight:0.1, type:'health' } ],
+        benefits:[ { rate:0.05, weight:0.05, type:'health' } ],
+        duration:{ hours:8, errors:[-0.3,0.2] }
+    },
+    // weeklies
+    {
+        label:'laundry',
+        type:'basic',
+        rate:0.7,
+        risks:[ { rate:0.3, weight:0.1, type:'health' } ],
+        benefits:[ { rate:0.05, weight:0.05, type:'health' } ],
+        duration:{ hours:8, errors:[-0.3,0.2] }
     }
-  },
-  {
-    label:'rest',
-    type:'health',
-    rate:1,
-    risk:{
-      rate:0.3,
-      weight:0.1,
-      type:'health'
-    },
-    benefit:{
-      rate:0.05,
-      weight:0.05,
-      type:'health'
-    },
-    duration:{
-      hours:1,
-      errors:[-0.3,0.2]
-    }
-  },
-  {
-    label:'eat',
-    type:'self',
-    rate:1,
-    risk:{
-      rate:0.1,
-      weight:0.1,
-      type:'health'
-    },
-    benefit:{
-      rate:0.05,
-      weight:0.05,
-      type:'health'
-    },
-    duration:{
-      hours:1.5,
-      errors:[-0.3,0.2]
-    }
-  },
-  {
-    label:'eat',
-    type:'self',
-    rate:1,
-    risk:{
-      rate:0.1,
-      weight:0.1,
-      type:'health'
-    },
-    benefit:{
-      rate:0.05,
-      weight:0.05,
-      type:'health'
-    },
-    duration:{
-      hours:1.5,
-      errors:[-0.3,0.2]
-    }
-  }
+
 ];
