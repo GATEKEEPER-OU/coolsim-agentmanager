@@ -10,11 +10,11 @@
 // risk: representing the risk of not acting as cause of a new condition, {rate, weight, type}
 //       rate: probability of triggering a worsening
 //       weight: value to add to the severity or permanence of a condition
-//       type: category of risk
+//       type: category of risk ['mental','social','physical','behavioural']
 // benefit: representing the benefit of acting as cause of removing an existing condition, {rate, weight, type}
 //       rate: probability of triggering an improvement
 //       weight: value to remove to the severity or permanence of a condition
-//       type: category of benefit
+//       type: category of benefit ['mental','social','physical','behavioural']
 // duration:  duration in hours and errors (array of rates representing how much the duration can deviate [0.1,-0.1])
 
 exports.get = ()=>[
@@ -23,82 +23,219 @@ exports.get = ()=>[
         label:'sleep',
         type:'health',
         rate:1,
-        risks:[ { rate:0.3, weight:0.1, type:'health' } ],
-        benefits:[ { rate:0.05, weight:0.05, type:'health' } ],
+        risks:[ { rate:0.3, weight:0.1, type:'physical' } ],
+        benefits:[ { rate:0.05, weight:0.05, type:'physical' } ],
         duration:{ hours:8, errors:[-0.3,0.2] }
     },
     {
         label:'rest',
         type:'health',
         rate:1,
-        risks:[ { rate:0.3, weight:0.1, type:'health' } ],
-        benefits:[ { rate:0.05, weight:0.05, type:'health' } ],
-        duration:{ hours:8, errors:[-0.3,0.2] }
+        risks:[ { rate:0.3, weight:0.1, type:'physical' } ],
+        benefits:[ { rate:0.05, weight:0.05, type:'physical' } ],
+        duration:{ hours:1, errors:[-0.3,0.2] }
     },
     {
         label:'eat',
         type:'self',
         rate:1,
-        risks:[ { rate:0.3, weight:0.1, type:'health' } ],
-        benefits:[ { rate:0.05, weight:0.05, type:'health' } ],
-        duration:{ hours:8, errors:[-0.3,0.2] }
+        risks:[ { rate:0.3, weight:0.1, type:'physical' } ],
+        benefits:[ { rate:0.05, weight:0.05, type:'physical' } ],
+        duration:{ hours:1, errors:[-0.3,0.2] }
     },
     {
         label:'toilet',
         type:'self',
         rate:1,
-        risks:[ { rate:0.3, weight:0.1, type:'health' } ],
-        benefits:[ { rate:0.05, weight:0.05, type:'health' } ],
-        duration:{ hours:8, errors:[-0.3,0.2] }
+        risks:[ { rate:0.3, weight:0.1, type:'physical' } ],
+        benefits:[ ],
+        duration:{ hours:0.5, errors:[-0.3,0.2] }
     },
     {
         label:'bathing',
         type:'self',
         rate:1,
-        risks:[ { rate:0.3, weight:0.1, type:'health' } ],
-        benefits:[ { rate:0.05, weight:0.05, type:'health' } ],
-        duration:{ hours:8, errors:[-0.3,0.2] }
+        risks:[ { rate:0.3, weight:0.1, type:'physical' } ],
+        benefits:[ ],
+        duration:{ hours:0.5, errors:[-0.3,0.2] }
     },
     {
-        label:'going_out',
+        label:'going out',
         type:'self',
         rate:1,
-        risks:[ { rate:0.3, weight:0.1, type:'health' } ],
-        benefits:[ { rate:0.05, weight:0.05, type:'health' } ],
-        duration:{ hours:8, errors:[-0.3,0.2] }
+        risks:[
+            { rate:0.1, weight:0.1, type:'social' },
+            { rate:0.1, weight:0.1, type:'physical' },
+            { rate:0.1, weight:0.1, type:'mental' }
+            ],
+        benefits:[
+            { rate:0.1, weight:0.1, type:'social' },
+            { rate:0.1, weight:0.1, type:'physical' },
+            { rate:0.1, weight:0.1, type:'mental' }
+            ],
+        duration:{ hours:2, errors:[-0.3,0.2] }
     },
     {
         label:'cook',
         type:'self',
         rate:1,
-        risks:[ { rate:0.3, weight:0.1, type:'health' } ],
-        benefits:[ { rate:0.05, weight:0.05, type:'health' } ],
-        duration:{ hours:8, errors:[-0.3,0.2] }
+        risks:[
+            { rate:0.3, weight:0.1, type:'physical' },
+            { rate:0.3, weight:0.1, type:'behavioural' }
+            ],
+        benefits:[
+            { rate:0.05, weight:0.05, type:'physical' },
+            { rate:0.05, weight:0.05, type:'behavioural' }
+            ],
+        duration:{ hours:1, errors:[-0.3,0.2] }
     },
     {
         label:'grooming',
         type:'self',
         rate:1,
-        risks:[ { rate:0.3, weight:0.1, type:'health' } ],
-        benefits:[ { rate:0.05, weight:0.05, type:'health' } ],
-        duration:{ hours:8, errors:[-0.3,0.2] }
+        risks:[
+            { rate:0.3, weight:0.1, type:'behavioural' },
+            { rate:0.3, weight:0.1, type:'social' }
+        ],
+        benefits:[
+            { rate:0.3, weight:0.1, type:'behavioural' },
+            { rate:0.3, weight:0.1, type:'social' }
+            ],
+        duration:{ hours:0.5, errors:[-0.3,0.2] }
     },
     {
         label:'housekeeping',
         type:'basic',
+        rate:0.5,
+        risks:[
+            { rate:0.3, weight:0.1, type:'health' },
+            { rate:0.3, weight:0.1, type:'behavioural' }
+        ],
+        benefits:[
+            { rate:0.3, weight:0.1, type:'health' },
+            { rate:0.3, weight:0.1, type:'behavioural' }
+        ],
+        duration:{ hours: 1.5, errors:[-0.3,0.2] }
+    },
+    {
+        label:'working',
+        type:'basic',
         rate:0.7,
-        risks:[ { rate:0.3, weight:0.1, type:'health' } ],
-        benefits:[ { rate:0.05, weight:0.05, type:'health' } ],
+        risks:[
+            { rate:0.1, weight:0.1, type:'behavioural' },
+            { rate:0.1, weight:0.1, type:'social' }
+            ],
+        benefits:[
+            { rate:0.05, weight:0.05, type:'behavioural' },
+            { rate:0.05, weight:0.05, type:'social' }
+            ],
+        duration:{ hours: 6, errors:[-0.5,0.1] }
+    },
+    {
+        label:'exercises',
+        type:'self',
+        rate:0.5,
+        risks:[
+            { rate:0.3, weight:0.1, type:'behavioural' }
+            ],
+        benefits:[
+            { rate:0.05, weight:0.05, type:'behavioural' },
+            { rate:0.05, weight:0.05, type:'body' }
+            ],
+        duration:{ hours:8, errors:[-0.3,0.2] }
+    },
+    {
+        label:'reading',
+        type:'self',
+        rate:0.5,
+        risks:[
+            { rate:0.3, weight:0.1, type:'mind' }
+            ],
+        benefits:[
+            { rate:0.05, weight:0.05, type:'mind' }
+            ],
+        duration:{ hours:8, errors:[-0.3,0.2] }
+    },
+    {
+        label:'entertainment',
+        type:'self',
+        rate:0.5,
+        risks:[
+            { rate:0.3, weight:0.1, type:'mind' },
+            { rate:0.3, weight:0.1, type:'behavioural' }
+            ],
+        benefits:[
+            { rate:0.05, weight:0.05, type:'mind' }
+            ],
         duration:{ hours:8, errors:[-0.3,0.2] }
     },
     // weeklies
     {
         label:'laundry',
         type:'basic',
-        rate:0.7,
-        risks:[ { rate:0.3, weight:0.1, type:'health' } ],
-        benefits:[ { rate:0.05, weight:0.05, type:'health' } ],
+        rate:0.2,
+        risks:[
+            { rate:0.05, weight:0.1, type:'physical' },
+            { rate:0.3, weight:0.1, type:'behavioural' }
+        ],
+        benefits:[
+            { rate:0.05, weight:0.05, type:'body' },
+            { rate:0.3, weight:0.1, type:'social' }
+        ],
+        duration:{ hours:2, errors:[-0.3,0.2] }
+    },
+    {
+        label:'visit',
+        type:'socialization',
+        rate:0.25,
+        risks:[
+            { rate:0.3, weight:0.1, type:'social' },
+            { rate:0.3, weight:0.1, type:'behavioural' }
+            ],
+        benefits:[
+            { rate:0.05, weight:0.05, type:'social' },
+            { rate:0.05, weight:0.05, type:'behavioural' }
+        ],
         duration:{ hours:8, errors:[-0.3,0.2] }
-    }
-
+    },
+    {
+        label:'grocery',
+        type:'basic',
+        rate:0.25,
+        risks:[
+            { rate:0.3, weight:0.1, type:'behavioural' }
+            ],
+        benefits:[
+            { rate:0.05, weight:0.05, type:'social' },
+            { rate:0.05, weight:0.05, type:'behavioural' }
+        ],
+        duration:{ hours:2, errors:[-0.3,0.2] }
+    },
+    // monthlies
+    {
+        label:'check-up',
+        type:'health',
+        rate:0.03,
+        risks:[
+            { rate:0.3, weight:0.1, type:'body' },
+            { rate:0.3, weight:0.1, type:'mental' }
+            ],
+        benefits:[ { rate:0.05, weight:0.05, type:'behavioural' } ],
+        duration:{ hours:8, errors:[-0.3,0.2] }
+    },
+    {
+        label:'vacation',
+        type:'health',
+        rate:0.03,
+        risks:[
+            { rate:0.3, weight:0.1, type:'physical' },
+            { rate:0.3, weight:0.1, type:'behavioural' }
+            ],
+        benefits:[
+            { rate:0.05, weight:0.05, type:'behavioural' },
+            { rate:0.05, weight:0.05, type:'social' },
+            { rate:0.05, weight:0.05, type:'mental' }
+            ],
+        duration:{ hours:8, errors:[-0.3,0.2] }
+    },
 ];
