@@ -1,11 +1,11 @@
-const Clock = require('./Clock');
+const Clock = require('./Utils');
 const Actions = require('./Actions');
 
 
 // init of the simulation clock
 const timeSpeed = 3600; // 1s = 1h
 
-const clock = Clock.init(timeSpeed);
+const clock = new Clock(timeSpeed);
 
 //
 // setInterval(()=>{
@@ -21,8 +21,7 @@ const clock = Clock.init(timeSpeed);
 //
 
 // todo tests
-let testClock = Clock.init(3600);
-let actions = Actions.init(1984,testClock);
+let actions = Actions.init(1984,clock);
 
 
 console.log(actions.list);

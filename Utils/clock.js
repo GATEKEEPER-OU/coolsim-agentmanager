@@ -1,10 +1,7 @@
 const moment = require('moment');
 
 
-exports.init = (ratio) => new Clock(ratio);
-
-
-class Clock {
+module.exports = class Clock {
     // ratio 60 => 1sec = 1min
     // ratio 3600 => 1sec = 1h
     // ratio 86400 => 1sec = 1day

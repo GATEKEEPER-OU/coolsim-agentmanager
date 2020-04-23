@@ -1,6 +1,5 @@
-const listOfActions = require('./actions');
-const Clock = require('../Clock');
-
+const ACTIONS = require('./actions');
+const {costs:Costs,rate:Rate,time:Time} = require('../utils');
 
 exports.init = (yearOfBirth,clock)=>{
     return new Actions(yearOfBirth,clock);
@@ -17,7 +16,7 @@ class Actions {
     constructor (yearOfBirth,clock){
         this.clock = clock;
         this.BIRTH = yearOfBirth;
-        this.ACTIONS = listOfActions.get();
+        this.ACTIONS = ACTIONS;
     }
     get age(){
         return this.clock.age(this.BIRTH);
@@ -25,7 +24,7 @@ class Actions {
     get list(){
         return this.ACTIONS;
     };
-
+    static get getActions(){return this.ACTIONS;}
 
     // calc list of suggested actions of the day
     remind(conditions){
@@ -52,7 +51,7 @@ class Actions {
                 default: // basic
                     modifier = 1;
             }
-            if(!this._checkRate(action.rate,conditions,modifier)){
+            if(!Rate.check(action.rate,this.age,conditions,modifier)){
                 return partial;
             }
             // add the action to the list
@@ -88,7 +87,7 @@ class Actions {
         // calc outcomes and further skips based on the calc of durations and benefits
         return acts.reduce((partial, action)=>{
                 // check if there is still time to act
-                let duration = this._duration(action,conditions);
+                let duration = Time.duration(action,conditions);
                 if(partial.time + duration > this.DAY){
 
                     // no time to carry out this action
@@ -146,15 +145,6 @@ class Actions {
         return {negative:outcomes};
     }
 
-    // calculate duration
-    _duration({duration:{hours,errors}},conditions){
-        let duration = hours;
-        let error = errors[Math.floor(Math.random()*errors.length)];
-        // increase the error considering age and conditions (always slower, thus error is abs)
-        error += (Math.abs(error) * (this._ageingCost() + this._conditionsCost(conditions)) );
-        return duration + error ;
-    }
-
     // calculate rate of an outcome
     _outcomes(events,decision,conditions){
         // set modifier
@@ -168,58 +158,11 @@ class Actions {
 
         //calc returns array [{type:weight}, ... ]
         return events.reduce((partial,{rate,weight,type})=>{
-            // if over the rate, then no outcome
-            if(!this._checkRate(rate, conditions, modifier) ){
-                return partial;
-            }
-
-            let contingencyCost = this._contingencyCost(conditions);
-            let cost = weight + (contingencyCost * weight * modifier);
+            let cost = Costs.weight(rate,weight,this.age,conditions,modifier);
             // else, update weight of outcome
             partial[type] = !partial[type] ? cost : partial[type] + cost;
 
             return partial;
         },{});
-    }
-
-
-    // support functions
-    // logic of ageing and conditions
-    // rate (eg. 0.1, {age,conditions} features of user state and arrays
-    // modifier: 1, -1 or 0 change the logic of adding or removing contingency cost from rate
-    _checkRate(rate,conditions,modifier = 1){
-        if(isNaN(modifier)){modifier = 1;}
-        if(isNaN(rate)){return false;}
-        // calc rate
-        if( Math.random() > (rate + (this._contingencyCost(this.age,conditions) * rate * modifier) ) ){
-            return false;
-        }
-        return true;
-    }
-    _contingencyCost(conditions = 0) {
-        return this._ageingCost(this.age) + this._conditionsCost(conditions);
-    }
-
-    _ageingCost(){
-        // todo improve with a non-linear function
-        const threshold = 50;
-        // if age > threshold then 1% each year above the threshold
-        return (this.age - threshold) > 0 ? (this.age - threshold)/100 : 0;
-    }
-    _conditionsCost(conditions){
-        let num = 0;
-        // managing different types set, array, maps
-        if(Array.isArray(conditions)){
-            num += conditions.length;
-        } else if(conditions instanceof Set){
-            num += conditions.size;
-        } else if(conditions instanceof Map){
-            num += conditions.size;
-        } else if(!isNaN(conditions)){
-            num += parseFloat(conditions);
-        }
-        // todo improve with a non-linear function
-        // 1% each condition
-        return num/100;
     }
 }

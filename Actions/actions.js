@@ -17,8 +17,20 @@
 //       type: category of benefit ['mental','social','physical','behavioural']
 // duration:  duration in hours and errors (array of rates representing how much the duration can deviate [0.1,-0.1])
 
-exports.get = ()=>[
+module.exports = [
     // dailies
+    {
+        label:'study',
+        type:'culture',
+        rate:0.3,
+        risks:[ { rate:0.3, weight:0.1, type:'behavioural' } ],
+        benefits:[
+                { rate:0.3, weight:0.1, type:'behavioural' },
+                { rate:0.05, weight:0.2, type:'socialization' },
+                { rate:0.05, weight:0.2, type:'mind' },
+            ],
+        duration:{ hours:8, errors:[-0.3,0.2] }
+    },
     {
         label:'sleep',
         type:'health',

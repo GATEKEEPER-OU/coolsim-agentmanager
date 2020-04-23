@@ -9,101 +9,127 @@
 //      weight: -1 to 1, // gets more or less severe and how much over time
 // }
 
-exports.list = () => [
-    { label:'depression', type: 'mental', duration:'chronic', severity:0.5, progression: {
+module.exports = [
+    { label:'depression', type: 'mental', duration:'chronic', severity:0.5, rate:0.05, progression: {
         scale: 'day',
         rate: 0.2,
         weight: 0.2,
         }
     },
-    { label:'paranoia', type: 'mental', duration:'chronic', severity:0.5, progression: {
+    { label:'paranoia', type: 'mental', duration:'chronic', severity:0.5, rate:0.01, progression: {
         scale: 'day',
         rate: 0.2,
         weight: 0.2,
         }
     },
-    { label:'diabetes', type: 'physical', duration:'chronic', severity:0.3, progression: {
+    { label:'diabetes', type: 'physical', duration:'chronic', severity:0.3, rate:0.05, progression: {
         scale: 'day',
         rate: 0.1,
         weight: 0.01,
         }
     },
-    { label:'isolation', type: 'behavioral', duration:'temporary', severity:0.1, progression: {
+    { label:'isolation', type: 'behavioral', duration:'temporary', severity:0.1, rate:0.01, progression: {
+        scale: 'month',
+        rate: 0.07,
+        weight: 0.5,
+        }
+    },
+    { label:'self-isolation', type: 'behavioral', duration:'temporary', severity:0.1, rate:0.05, progression: {
         scale: 'month',
         rate: 0.1,
         weight: 0.05,
         }
     },
-    { label:'self-isolation', type: 'behavioral', duration:'temporary', severity:0.1, progression: {
+    { label:'loneliness', type: 'mental', duration:'temporary', severity:0.2, rate:0.1, progression: {
         scale: 'month',
         rate: 0.1,
         weight: 0.05,
         }
     },
-    { label:'loneliness', type: 'mental', duration:'temporary', severity:0.2, progression: {
-        scale: 'month',
-        rate: 0.1,
-        weight: 0.05,
-        }
-    },
-    { label:'eat disorder', type: 'behavioural', duration:'chronic', severity:0.2, progression: {
+    { label:'eat disorder', type: 'behavioural', duration:'chronic', severity:0.2, rate:0.1, progression: {
         scale: 'month',
         rate: 0.01,
         weight: 0.05,
         }
     },
-    { label:'metabolic disorder', type: 'health', duration:'chronic', severity:0.3, progression: {
+    { label:'metabolic disorder', type: 'health', duration:'chronic', severity:0.3, rate:0.1, progression: {
         scale: 'month',
         rate: 0.01,
         weight: 0.05,
         }
     },
-    { label:'rheumatic diseases', type: 'health', duration:'chronic', severity:0.5, progression: {
+    { label:'rheumatic diseases', type: 'health', duration:'chronic', severity:0.5, rate:0.1, progression: {
         scale: 'month',
         rate: 0.01,
         weight: 0.05,
         }
     },
-    { label:'exhaustion', type: 'health', duration:'temporary', severity:0.1, progression: {
+    { label:'exhaustion', type: 'health', duration:'temporary', severity:0.1, rate:0.1, progression: {
         scale: 'day',
         rate: 0.01,
         weight: 0.05,
         }
     },
-    { label:'cancer', type: 'health', duration:'chronic', severity:0.8, progression: {
-        scale: 'monthly',
+    { label:'cancer', type: 'health', duration:'chronic', severity:0.8, rate:0.05, progression: {
+        scale: 'month',
         rate: 0.3,
         weight: 0.5,
         }
     },
-    { label:'heart disease', type: 'health', duration:'chronic', severity:0.6, progression: {
-        scale: 'weekly',
+    { label:'heart disease', type: 'health', duration:'chronic', severity:0.6, rate:0.05, progression: {
+        scale: 'week',
         rate: 0.1,
         weight: 0.1,
         }
     },
-    { label:'flu', type: 'health', duration:'temporary', severity:0.4, progression: {
+    { label:'flu', type: 'health', duration:'temporary', severity:0.4, rate:0.2, progression: {
         scale: 'day',
         rate: 0.1,
         weight: -0.1,
         }
     },
-    { label:'injury', type: 'health', duration:'temporary', severity:0.4, progression: {
+    { label:'injury', type: 'health', duration:'temporary', severity:0.4, rate:0.1, progression: {
         scale: 'day',
         rate: 0.1,
         weight: -0.1,
         }
     },
-    { label:'impairment', type: 'health', duration:'permanent', severity:0.5, progression: {
+    { label:'impairment', type: 'health', duration:'permanent', severity:0.5, rate:0.05, progression: {
         scale: 'month',
         rate: 0.05,
         weight: 0.01,
         }
     },
-    { label:'dementia', type: 'health', duration:'permanent', severity:0.7, progression: {
+    { label:'dementia', type: 'health', duration:'permanent', severity:0.7, rate:0.05, progression: {
         scale: 'month',
         rate: 0.1,
         weight: 0.1,
+        }
+    },
+    { label:'allergy', type: 'health', duration:'chronic', severity:0.2,  rate:0.1, progression: {
+        scale: 'month',
+        rate: 0.01,
+        weight: 0.1,
+        }
+    },
+    { label:'poisoning', type: 'health', duration:'temporary', severity:0.6, rate:0.05, progression: {
+        scale: 'day',
+        rate: 0.01,
+        weight: -0.01,
+        }
+    },
+    {
+    label: 'concussion', type: 'health', duration: 'temporary', severity: 0.5, progression: {
+            scale: 'day',
+            rate: 0.8,
+            weight: -0.1
+        }
+    },
+    {
+    label: 'breaking', type: 'health', duration: 'temporary', severity: 0.5, progression: {
+        scale: 'month',
+        rate: 0.8,
+        weight: -0.02,
         }
     }
 ];

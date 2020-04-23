@@ -10,3 +10,19 @@
 // todo agent has internal phases defined bu
 
 // todo agents are setTimeout functions working on the community clock
+
+// todo state machine active, self-sufficient, dependent, death
+// list of actions he can perform
+// preferences
+// in training
+// use emerging events as a malus for the next round of actions
+
+
+module.exports = class Agent{
+
+
+    constructor(){
+
+    }
+
+};
