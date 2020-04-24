@@ -1,9 +1,7 @@
 const ACTIONS = require('./actions');
 const {costs:Costs,rate:Rate,time:Time} = require('../utils');
 
-exports.init = (yearOfBirth,clock)=>{
-    return new Actions(yearOfBirth,clock);
-};
+
 
 // actions have a cost and risk factor related to the agent's state
 // agents get the daily list and choose which actions to carry on and which not
@@ -24,7 +22,7 @@ class Actions {
     get list(){
         return this.ACTIONS;
     };
-    static get getActions(){return this.ACTIONS;}
+    static get getActions(){return ACTIONS;}
 
     // calc list of suggested actions of the day
     remind(conditions){
@@ -166,3 +164,5 @@ class Actions {
         },{});
     }
 }
+
+module.exports = Actions;

@@ -25,8 +25,6 @@ const CONDITIONS = require('./conditions');
 // the permanence within a low, mild or sever level or the condition
 // can result in an increasing risk of new conditions
 
-exports.init = (yearOfBirth,clock) => new Conditions(yearOfBirth,clock);
-
 
 class Conditions{
 
@@ -43,7 +41,7 @@ class Conditions{
     get list(){
         return Array.from(this.conditions);
     };
-    static get getConditions(){return this.CONDITIONS;}
+    static get getConditions(){return CONDITIONS;}
 
 
     // calc of updates of conditions, given a positive and negative outcomes
@@ -52,8 +50,7 @@ class Conditions{
     assess( positive = new Map (), negative = new Map() ){
         let emergingEvents = [];
         // update each condition
-        this.conditions.keys().forEach(key => {
-            let condition = this.conditions[key];
+        this.conditions.forEach((condition,key) => {
             let type = condition.type;
             let {scale, rate, weight} = condition.progression;
             // impact of progression
@@ -143,9 +140,11 @@ class Conditions{
     }
 }
 
+module.exports = Conditions;
 
 
-let clock = new Time.Clock(3600);
-let c = new Conditions(1920,clock);
 
-console.log('fffffffffffff',c.assess({positive: [], negative:[]}));
+// let clock = new Time.Clock(3600);
+// let c = new Conditions(1920,clock);
+// console.log('asdsad',c.list);
+// console.log('fffffffffffff',c.assess([], ));

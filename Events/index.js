@@ -5,10 +5,13 @@ const Conditions = require('../Conditions');
 
 // manager of events
 // each simulation should have one instance
-module.exports = class Events {
+class Events {
 
     constructor(){
         this.EVENTS = EVENTS;
+        this.events = this.EVENTS.reduce((partial,event)=>{
+            return partial.set(event.label,event);
+        },new Map);
         this.ACTIONS = Actions.getActions;
         this.CONDITIONS = Conditions.getConditions;
         this.idles = this.EVENTS.reduce((partial,event)=>{
@@ -19,15 +22,19 @@ module.exports = class Events {
 
     sunrise(){
         // check if idle event are triggered
-        let actives = this._checkEvents(this.idles, 'trigger');
+        let actives = this._checkEvents(this.idles, 'starting');
         // check if active event have ended
         let idles = this._checkEvents(this.actives, 'ending');
         // update lists
         this._updateList(this.idles,idles,actives);
         this._updateList(this.actives,actives,idles);
 
-        let {actions,conditions} = actives.entries().reduce((partial,active)=>{
-            let event = this.EVENTS[active];
+
+        // console.log('idles',idles);
+        // console.log('actives',actives);
+        let {actions,conditions} = Array.from(actives).reduce((partial,active)=>{
+            let event = this.events.get(active);
+            // console.log('~~~~~~~',active,event);
             event.outcomes.forEach(outcome=>{
                 let effects = outcome.effects;
                 if(outcome.source === 'action'){
@@ -45,11 +52,12 @@ module.exports = class Events {
         return { actions, conditions };
     }
     _checkEvents(list, field){
+        console.log(list);
         let otherList = new Set();
-        list.forEach(key=>{
-            let trigger = this.EVENTS[key][field];
+        list.forEach(name=>{
+            let trigger = this.events.get(name)[field];
             if( Rate.test(trigger) ){
-                otherList.add(trigger);
+                otherList.add(name);
             }
         });
         return otherList;
@@ -73,6 +81,10 @@ module.exports = class Events {
         },[])
     }
 };
+module.exports = Events;
 
 
 // todo test
+let events = new Events();
+
+console.log('.....',events.sunrise());
