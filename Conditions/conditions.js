@@ -118,6 +118,12 @@ module.exports = [
         weight: -0.01,
         }
     },
+    { label:'bleeding', type: 'health', duration:'temporary', severity:0.3, rate:0.05, progression: {
+        scale: 'day',
+        rate: 0.01,
+        weight: -0.4,
+        }
+    },
     {
     label: 'concussion', type: 'health', duration: 'temporary', severity: 0.5, progression: {
             scale: 'day',

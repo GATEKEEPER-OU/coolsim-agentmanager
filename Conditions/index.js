@@ -141,10 +141,3 @@ class Conditions{
 }
 
 module.exports = Conditions;
-
-
-
-// let clock = new Time.Clock(3600);
-// let c = new Conditions(1920,clock);
-// console.log('asdsad',c.list);
-// console.log('fffffffffffff',c.assess([], ));

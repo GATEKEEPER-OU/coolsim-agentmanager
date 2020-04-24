@@ -9,15 +9,60 @@ class Events {
 
     constructor(){
         this.EVENTS = EVENTS;
-        this.events = this.EVENTS.reduce((partial,event)=>{
-            return partial.set(event.label,event);
-        },new Map);
         this.ACTIONS = Actions.getActions;
         this.CONDITIONS = Conditions.getConditions;
+
+        // build list of active and idle events
         this.idles = this.EVENTS.reduce((partial,event)=>{
             return partial.add(event.label);
         },new Set());
         this.actives = new Set();
+
+        // build effects library
+        let effectsList = [];
+
+            // build label maps
+        this.eventsMap = this.EVENTS.reduce((partial,event)=>{
+            //update effects list
+            effectsList = effectsList.concat(event.effects);
+            return partial.set(event.label,event);
+        },new Map());
+        this.actionsMap = this.ACTIONS.reduce((partial,event)=>{
+            return partial.set(event.label,event);
+        },new Map());
+        this.conditionsMap = this.CONDITIONS.reduce((partial,event)=>{
+            return partial.set(event.label,event);
+        },new Map());
+
+        this.effectsMap = effectsList.reduce((partial,effect)=>{
+            // check if the source is given
+            if(!effect.source){
+                console.error(`ERROR: Missing source definition for the effect ${effect.label}`);
+                return partial;
+            }
+
+            let sourceMap = this.conditionsMap;
+            if (effect.source === 'action'){
+                sourceMap = this.actionsMap;
+            }
+
+            // check if i can find it in the list
+            if(!sourceMap.has(effect.label)){
+                console.error(`ERROR: Missing ${effect.label} from list of ${effect.source}`);
+                return partial;
+            }
+
+            // copy effect
+            let result = Object.assign( {},
+                sourceMap.get(effect.label));
+
+            // check if ratio is given
+            if(effect.ratio){
+                result.ratio =  effect.ratio;
+            }
+
+            return partial.set(result.label,result);
+        },new Map());
     }
 
     sunrise(){
@@ -32,30 +77,19 @@ class Events {
 
         // console.log('idles',idles);
         // console.log('actives',actives);
-        let {actions,conditions} = Array.from(actives).reduce((partial,active)=>{
-            let event = this.events.get(active);
-            // console.log('~~~~~~~',active,event);
-            event.outcomes.forEach(outcome=>{
-                let effects = outcome.effects;
-                if(outcome.source === 'action'){
-                    let newActions = this._getFromList(this.ACTIONS,new Set(effects));
-                   partial.actions = partial.actions.concat(...newActions);
-                }else{
-                    let newConditions = this._getFromList(this.CONDITIONS,new Set(effects));
-                    partial.conditions = partial.actions.concat(...newConditions);
-                }
-                return partial
+        return Array.from(actives).reduce((partial,active)=>{
+            let event = this.eventsMap.get(active);
+            event.effects.forEach(effect=>{
+                let newEffect = Object.assign({},this.effectsMap.get(effect.label) );
+                partial[effect.source]  = partial[effect.source].concat(newEffect);
             });
-
-            }, { actions:[], conditions:[] });
-
-        return { actions, conditions };
+            return partial;
+            }, { action:[], condition:[] });
     }
     _checkEvents(list, field){
-        console.log(list);
         let otherList = new Set();
         list.forEach(name=>{
-            let trigger = this.events.get(name)[field];
+            let trigger = this.eventsMap.get(name)[field];
             if( Rate.test(trigger) ){
                 otherList.add(name);
             }
@@ -67,24 +101,5 @@ class Events {
         add.forEach(key=>list.add(key));
         remove.forEach(key=>list.delete(key));
     }
-    // source of elements, set,
-    _getFromList(source,set){
-
-        return source.reduce((partial,element)=>{
-            // if not in the set
-            if(!set.has(element.label)){return partial;}
-            // is in the set, therefore override rate
-            let newValue = this.EVENTS[element.label].spreading;
-            // copy condition and update rate
-            let newElement = Object.assign({},element,{rate: newValue});
-            return partial.concat(newElement);
-        },[])
-    }
 };
 module.exports = Events;
-
-
-// todo test
-let events = new Events();
-
-console.log('.....',events.sunrise());

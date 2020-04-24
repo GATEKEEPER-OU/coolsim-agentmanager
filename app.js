@@ -1,6 +1,7 @@
 const Clock = require('./Utils');
 const Actions = require('./Actions');
-
+const Conditions = require('./Conditions');
+const Events = require('./Events');
 
 // init of the simulation clock
 const timeSpeed = 3600; // 1s = 1h
@@ -20,23 +21,21 @@ const clock = new Clock(timeSpeed);
 //
 //
 
-// todo tests
-let actions = Actions.init(1984,clock);
+// tests actions
+let actions = new Actions(1984,clock);
+let conditions = new Conditions(1984,clock);
+let events = new Events();
 
 
-console.log(actions.list);
-console.log(actions.age);
 
 let reminders = actions.remind([]);
-
-// console.log(reminders);
-
-console.log(actions.outcomes(reminders,[],[]) );
-
+let actionOutcomes = actions.outcomes(reminders,[],[])
+let emergingEvents = conditions.assess([],[]);
+let todayEvents = events.sunrise();
 
 
-// todo binding between movements and phases of the day
 
-// todo binding between events and phases of the day
-
-//
+console.log('Conditions.assess',emergingEvents);
+console.log('Actions.remind',reminders);
+console.log('Actions.outcomes',actionOutcomes );
+console.log('Events.sunrise',todayEvents );
