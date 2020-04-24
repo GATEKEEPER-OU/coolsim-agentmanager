@@ -1,3 +1,6 @@
+const Actions = require('./Actions');
+const Conditions = require('./Conditions');
+
 // todo init agents from users, registers agents in users status
 
 // todo each agent is initialised with:
@@ -20,9 +23,27 @@
 
 module.exports = class Agent{
 
+    constructor(clock, yearOfBirth){
+        this.clock = clock;
+        // if no year give, it is a new born
+        if(!yearOfBirth){
+            this.yearOfBirth = clock.now().get('year');
+        }
+        this.conditionsSet = new Set();
+    }
+    get age(){return this.clock.age(this.yearOfBirth)}
+    get conditions(){return this.conditions; }
 
-    constructor(){
+    dailyRoutine(events){
+        // todo evaluate impact of events
 
+        // todo get reminders of daily activities
+
+        // todo decide what to do
+        // todo decide what to skip
+        // todo evaluate outcomes
+
+        // todo return the logs the day
     }
 
 };

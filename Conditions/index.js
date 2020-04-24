@@ -28,9 +28,11 @@ const CONDITIONS = require('./conditions');
 
 class Conditions{
 
-    constructor(yearOfBirth,clock){
+    constructor(yearOfBirth,clock,priorConditions = []){
         this.CONDITIONS = CONDITIONS;
-        this.conditions = new Map();
+        this.conditionsMap = priorConditions.reduce((partial,condition)=>{
+            partial.set(condition.label,Object.assign({},condition) );
+        },new Map());
         this.BIRTH = yearOfBirth;
         this.clock = clock;
     }
@@ -39,7 +41,7 @@ class Conditions{
         return this.clock.age(this.BIRTH);
     }
     get list(){
-        return Array.from(this.conditions);
+        return Array.from(this.conditionsMap.entries());
     };
     static get getConditions(){return CONDITIONS;}
 
@@ -50,9 +52,9 @@ class Conditions{
     assess( positive = new Map (), negative = new Map() ){
         let emergingEvents = [];
         // update each condition
-        this.conditions.forEach((condition,key) => {
+        this.conditionsMap.forEach((condition,key) => {
             let type = condition.type;
-            let {scale, rate, weight} = condition.progression;
+            let {rate, weight} = condition.progression;
             // impact of progression
             let updates = [];
             updates.push( Costs.weight(rate, weight, this.age, this.conditions) );
@@ -70,7 +72,7 @@ class Conditions{
     // retrieve effect of outcomes
     _effects(type, outcomes, effect){
         // check each condition
-        if( outcomes.has(condition.type) ){
+        if( outcomes.has(effect.type) ){
             let modifier = effect === 'positive' ? -1 : 1;
             return ( modifier * outcomes.get(type) );
         }
@@ -111,7 +113,7 @@ class Conditions{
         let events = [];
         // remove temporary condition if weight <= 0
         if (condition.duration === 'temporary' && condition.weight <= 0) {
-            this.conditions.delete(key);
+            this.conditionsMap.delete(key);
             return events;
         }
 
@@ -135,7 +137,7 @@ class Conditions{
         condition.weight += update;
 
         // save new state of condition
-        this.conditions.set(key,condition);
+        this.conditionsMap.set(key,condition);
         return events;
     }
 }
