@@ -100,7 +100,7 @@ module.exports = [
         weight: 0.01,
         }
     },
-    { label:'dementia', type: 'health', duration:'permanent', severity:0.7, rate:0.05, progression: {
+    { label:'dementia', type: 'health', duration:'permanent', severity:0.7, rate:0.005, progression: {
         scale: 'month',
         rate: 0.1,
         weight: 0.1,

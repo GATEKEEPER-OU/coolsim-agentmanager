@@ -8,6 +8,7 @@ module.exports = {
         weight: calcWeight
     },
     rate:{
+        defaultRate,
         test: testRate,
         check: checkRate,
         rateToSeverity: rateToSeverity,
@@ -18,7 +19,8 @@ module.exports = {
         Clock,
         scaleToRate:scaleToRate,
         rateToScale:rateToScale
-    }
+    },
+    toArray
 };
 
 // cost based on the age beyond a threshold
@@ -59,9 +61,29 @@ function calcWeight(rate,weight,age,conditions, modifier = 1) {
     return weight + (contingency * weight * modifier);
 }
 
+// calc ratio of default
+function defaultRate(list = [],field = 'rate'){
+    if(list instanceof Map){
+        list = Array.from(list.values());
+    }
+    if(list instanceof Set){
+        list = Array.from(list);
+    }
+    // set default ratio
+    let total = list.reduce((sum,e)=> {
+        let val = e[field];
+        if (val && !isNaN(val)) {
+            return e[field] + sum;
+        }
+        return sum;
+    },0);
+    list.filter(role=>!!role.type)[0][field] = Math.max(0, (1 - total) );
+    return list;
+}
+
 // just test a rate
 function testRate(rate){
-    return Math.random() > rate ? false : true;
+    return (Math.random() <= rate);
 }
 
 // rate (eg. 0.1, {age,conditions} features of user state and arrays
@@ -70,10 +92,7 @@ function checkRate(rate,age,conditions,modifier = 1){
     if(isNaN(modifier)){modifier = 1;}
     if(isNaN(rate)){return false;}
     // calc rate
-    if( Math.random() > (rate + (contingencyCost(age,conditions) * rate * modifier) ) ){
-        return false;
-    }
-    return true;
+    return ( Math.random() < (rate + (contingencyCost(age,conditions) * rate * modifier) ) );
 }
 
 
@@ -150,4 +169,18 @@ function rateToSeverity(rate){
     if(rate <= 0.15) return 'week';
     if(rate <= 0.7) return 'work-day';
     return 'day';
+}
+
+
+// general utils
+
+function toArray(list) {
+    if(Array.isArray(list)){return list;}
+    if(list instanceof Map){
+        return Array.from(list.values());
+    }
+    if(list instanceof Set){
+        return Array.from(list);
+    }
+    return Array.from(list);
 }

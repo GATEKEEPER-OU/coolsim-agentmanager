@@ -1,3 +1,4 @@
+const {rate:Rate} = require('../Utils');
 // agent's roles
 // each agent can have a role a time
 // roles: ['gp','nurse','social_worker','community_worker','ward','neighbour']
@@ -15,13 +16,7 @@ let roles = [
     {label:'neighbour',type:'default'}
 ];
 
-// set default ratio
-let total = roles.reduce((sum,role)=> {
-    if (role.ratio && !isNaN(role.ratio)) {
-        return role.ratio + sum;
-    }
-    return sum;
-},0);
-roles.filter(role=>!!role.type)[0].ratio = 1 - total;
+// calc default
+roles = Rate.defaultRate(roles);
 
 module.exports = roles;

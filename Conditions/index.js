@@ -1,4 +1,4 @@
-const {time:Time,costs:Costs,rate:Rate} = require('../Utils');
+const {time:Time,costs:Costs,rate:Rate, toArray} = require('../Utils');
 const CONDITIONS = require('./conditions');
 
 // Module managing the agent conditions
@@ -30,11 +30,21 @@ class Conditions{
 
     constructor(yearOfBirth,clock,priorConditions = []){
         this.CONDITIONS = CONDITIONS;
-        this.conditionsMap = priorConditions.reduce((partial,condition)=>{
-            partial.set(condition.label,Object.assign({},condition) );
-        },new Map());
         this.BIRTH = yearOfBirth;
         this.clock = clock;
+
+
+        let prior = toArray(priorConditions)
+        // check prior conditions or generate some
+        if(!prior || !Array.isArray(prior) || prior.length < 1){
+            // todo generate new conditions
+            prior = this.CONDITIONS.filter(c=>Rate.check(c.rate,this.age));
+        }
+        this.conditionsMap = prior.reduce((partial,condition)=>{
+            partial.set(condition.label,Object.assign({},condition) );
+            return partial;
+        },new Map());
+        console.log(this.conditionsMap);
     }
 
     get age(){
@@ -90,7 +100,7 @@ class Conditions{
 
     // update conditions with age and pre-existing conditions
     _update(key, updates) {
-        let condition = Object.assign({},this.conditions[key]);
+        let condition = Object.assign({},this.conditionsMap.get(key));
         let duration = condition.duration;
         // calc update considering logic of duration
         let update = updates.reduce((partial, num)=>{
