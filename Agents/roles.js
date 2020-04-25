@@ -2,15 +2,16 @@
 // each agent can have a role a time
 // roles: ['gp','nurse','social_worker','community_worker','ward','neighbour']
 // label: name and key
-// ratio: probability of having someone with the role
+// rate: probability of having someone with the role
+// skills: [array] of skills a role has as requirement
 // type: default => ratio is 1 - sum of all other ratios
 
 let roles = [
-    {label:'gp',ratio:0.0001},
-    {label:'nurse',ratio:0.005},
-    {label:'social worker',ratio:0.001},
-    {label:'community worker',ratio:0.01},
-    {label:'ward',ratio:0.1},
+    {label:'gp',rate:0.001,skills:['health visit','first aid','nutrition','calling']},
+    {label:'nurse',rate:0.005,skills:['health visit','first aid','nutrition','calling']},
+    {label:'social worker',rate:0.001,skills:['counseling','nutrition','calling']},
+    {label:'community worker',rate:0.01,skills:['counseling','calling']},
+    {label:'ward',rate:0.1,skills:['first aid','calling']},
     {label:'neighbour',type:'default'}
 ];
 
