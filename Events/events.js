@@ -34,7 +34,7 @@ module.exports = [
         ending:0.1,
         effects:[
             {label:'eat',source: 'action',rate:0.3},
-            {label:'visit',source: 'action',source: 'action', rate:1},
+            {label:'visit',source: 'action',rate:1},
             {label:'entertainment', source:'action', rate:1}
         ]
     },
