@@ -1,5 +1,5 @@
-const Actions = require('./Actions');
-const Conditions = require('./Conditions');
+const Actions = require('./Actions/');
+const Conditions = require('./Conditions/');
 
 // todo init agents from users, registers agents in users status
 
@@ -21,7 +21,16 @@ const Conditions = require('./Conditions');
 // use emerging events as a malus for the next round of actions
 
 
-module.exports = class Agent{
+// going out of the area > bring modifiers
+
+// the delta of outcomes > create new conditions? or trigger emergency?
+
+// pipeline of interventions to be done, eventually the next day?
+
+// degree of relations between agents
+
+
+class Agent{
 
     constructor(clock, yearOfBirth){
         this.clock = clock;
@@ -34,6 +43,7 @@ module.exports = class Agent{
     get age(){return this.clock.age(this.yearOfBirth)}
     get conditions(){return this.conditions; }
 
+    //
     dailyRoutine(events){
         // todo evaluate impact of events
 
@@ -46,4 +56,17 @@ module.exports = class Agent{
         // todo return the logs the day
     }
 
+
+
 };
+module.exports =  Agent;
+
+// todo test
+const {clock: Clock} = require('../Utils');
+let clock = new Clock(3600);
+let agent = new Agent(2015,clock);
+
+
+console.log(`Agent's age: ${agent.age}`);
+
+

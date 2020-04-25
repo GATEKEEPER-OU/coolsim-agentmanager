@@ -85,7 +85,7 @@ class Actions {
         // calc outcomes and further skips based on the calc of durations and benefits
         return acts.reduce((partial, action)=>{
                 // check if there is still time to act
-                let duration = Time.duration(action,conditions);
+                let duration = Time.duration(action.duration, conditions);
                 if(partial.time + duration > this.DAY){
 
                     // no time to carry out this action

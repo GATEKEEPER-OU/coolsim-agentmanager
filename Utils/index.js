@@ -55,8 +55,8 @@ function calcWeight(rate,weight,age,conditions, modifier = 1) {
     if(!checkRate(rate,age,conditions,modifier)){
         return 0
     }
-    let contingencyCost = contingencyCost(age,conditions);
-    return weight + (contingencyCost * weight * modifier);
+    let contingency = contingencyCost(age,conditions);
+    return weight + (contingency * weight * modifier);
 }
 
 // just test a rate
@@ -78,11 +78,16 @@ function checkRate(rate,age,conditions,modifier = 1){
 
 
 // calculate duration
-function duration({hours,errors},extra = 0){
-    let duration = hours;
-    let error = errors[Math.floor(Math.random()*errors.length)];
+// input structure of {hours, errors:[array], extra: [array of conditions]
+function duration({hours, errors},conditions = 0){
+    // extra can be a number or an array of conditions
+    let extraCost = conditionsCost(conditions);
+    let duration = parseFloat(hours);
+    let error = errors[Math.floor(Math.random() * errors.length)];
+    console.log('........',error);
     // increase the error considering age and conditions (always slower, thus error is abs)
-    error += (Math.abs(error) + extra );
+    error += (Math.abs(error) + extraCost );
+    console.log('-----', duration,error,duration+error);
     return duration + error ;
 }
 
