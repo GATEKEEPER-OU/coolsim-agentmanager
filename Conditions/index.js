@@ -40,8 +40,8 @@ class Conditions{
     get age(){
         return this.clock.age(this.BIRTH);
     }
-    get list(){
-        return Array.from(this.conditionsMap.entries());
+    get status (){
+        return Array.from(this.conditionsMap.values());
     };
     static get getConditions(){return CONDITIONS;}
 
@@ -50,6 +50,14 @@ class Conditions{
     // returns new events caused by the negative effect of outcomes
     // returns emerging events from the update
     assess( positive = new Map (), negative = new Map() ){
+        if(positive instanceof Array){
+            positive = new Map(positive);
+        }
+        if(negative instanceof Array){
+            negative = new Map(negative);
+        }
+
+
         let emergingEvents = [];
         // update each condition
         this.conditionsMap.forEach((condition,key) => {
