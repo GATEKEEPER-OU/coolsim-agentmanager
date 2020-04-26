@@ -26,7 +26,7 @@ class Actions {
 
     // calc list of suggested actions of the day
     remind(conditions){
-        return this.list.reduce((partial,action)=>{
+        return Array.from(this.list.reduce((partial,action)=>{
             // check if it falls in the list
             // modifier 1 add rate, -1 remove rate
             let modifier = 0;
@@ -55,7 +55,7 @@ class Actions {
             // add the action to the list
             partial.add(Object.assign({},action));
             return partial;
-        },new Set());
+        },new Set()));
     }
 
     // calc of outcomes

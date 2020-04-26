@@ -32,6 +32,9 @@ class Clock {
         // return current data X ratio - delta (so the clock starts at the real date)
         return moment( (Date.now() * this.speed) - this.delta);
     }
+    get date() {
+        return this.now.format('YYYY-MM-DD');
+    }
     // phase of the day in the simulation
     get phase() {
         let h = (this.now.get('hours') +1) % 24;

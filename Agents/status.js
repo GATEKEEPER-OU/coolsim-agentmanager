@@ -16,7 +16,7 @@ const {rate:Rate} = require('../Utils');
 // rate: probability of having a state
 // type (optional): default, rate = 1 - sum of all other
 
-let states = [
+let status = [
     {label:'death',rate:0,
         decline:{
             from:['active','independent','dependent'],
@@ -144,7 +144,7 @@ let states = [
 ];
 
 // calc default
-states = Rate.defaultRate(states);
+status = Rate.defaultRate(status);
 
 
-module.exports = states;
+module.exports = status;

@@ -130,10 +130,10 @@ function duration({hours, errors},conditions = 0){
     let extraCost = conditionsCost(conditions);
     let duration = parseFloat(hours);
     let error = errors[Math.floor(Math.random() * errors.length)];
-    console.log('........',error);
+    // console.log('........',error);
     // increase the error considering age and conditions (always slower, thus error is abs)
     error += (Math.abs(error) + extraCost );
-    console.log('-----', duration,error,duration+error);
+    // console.log('-----', duration,error,duration+error);
     return duration + error ;
 }
 

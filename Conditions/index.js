@@ -47,7 +47,7 @@ class Conditions{
             partial.set(condition.label,Object.assign({},condition) );
             return partial;
         },new Map());
-        console.log(this.conditionsMap);
+        // console.log(this.conditionsMap);
     }
 
     get age(){
@@ -56,6 +56,7 @@ class Conditions{
     get status (){
         return Array.from(this.conditionsMap.values());
     };
+
     static get getConditions(){return CONDITIONS;}
 
 
@@ -88,6 +89,15 @@ class Conditions{
 
         // return the emerging events to be used as malus by the agent
         return emergingEvents;
+    }
+
+    has(condition){
+        let name = condition;
+        if(typeof condition !== 'string' && condition.label){
+            name = condition.label
+        }
+
+        return this.conditionsMap.has(name);
     }
 
     // retrieve effect of outcomes
