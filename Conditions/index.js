@@ -1,5 +1,5 @@
-const {time:Time,costs:Costs,rate:Rate, toArray, mergeObjects} = require('../Utils');
-const CONDITIONS = require('./conditions');
+import {costs as Costs, rate as Rate, toArray, mergeObjects} from '../Utils/index.js';
+import {CONDITIONS} from './conditions.js';
 
 // Module managing the agent conditions
 // todo state machine combining:
@@ -26,9 +26,9 @@ const CONDITIONS = require('./conditions');
 // can result in an increasing risk of new conditions
 
 
-class Conditions{
+export class Conditions{
 
-    constructor({age,conditions},clock){
+    constructor({age,conditions=[]},clock){
         if(!clock){
             throw new Error('clock missing');
         }
@@ -214,5 +214,3 @@ class Conditions{
         return events;
     }
 }
-
-module.exports = Conditions;

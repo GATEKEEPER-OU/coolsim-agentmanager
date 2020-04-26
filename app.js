@@ -1,12 +1,13 @@
-const {time} = require('./Utils');
-const Actions = require('./Actions');
-const Conditions = require('./Conditions');
-const Events = require('./Events');
+import {time as Time} from './Utils/index.js';
+// const Actions = require('./Actions');
+import {Actions} from './Actions/index.js';
+import {Conditions} from './Conditions/index.js';
+import {Events} from './Events/index.js';
 
 // init of the simulation clock
 const timeSpeed = 3600; // 1s = 1h
 
-const clock = new time.Clock(timeSpeed);
+const clock = new Time.Clock(timeSpeed);
 
 //
 // setInterval(()=>{

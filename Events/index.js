@@ -1,11 +1,11 @@
-const EVENTS = require('./events');
-const {rate: Rate} = require('../Utils');
-const Actions = require('../Actions');
-const Conditions = require('../Conditions');
+import {EVENTS} from './events.js';
+import {rate as Rate} from '../Utils/index.js';
+import {Actions} from '../Actions/index.js';
+import {Conditions} from '../Conditions/index.js';
 
 // manager of events
 // each simulation should have one instance
-class Events {
+export class Events {
 
     constructor(clock){
         if(!clock){ throw new Error('clock required'); }
@@ -149,4 +149,3 @@ class Events {
     }
 
 };
-module.exports = Events;

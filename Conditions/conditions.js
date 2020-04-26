@@ -9,7 +9,7 @@
 //      weight: -1 to 1, // gets more or less severe and how much over time
 // }
 
-module.exports = [
+export const CONDITIONS = [
     { label:'depression', type: 'mental', duration:'chronic', severity:0.5, rate:0.05, progression: {
         scale: 'day',
         rate: 0.2,

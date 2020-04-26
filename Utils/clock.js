@@ -1,7 +1,8 @@
-const moment = require('moment');
+import moment from 'moment';
 
 
-class Clock {
+
+export class Clock {
 
     constructor(speed = 1) {
         // check speed and convert to number
@@ -29,6 +30,7 @@ class Clock {
     // getters
     // current time in the simulation
     get now() {
+        console.log('-----------',moment.now());
         // return current data X ratio - delta (so the clock starts at the real date)
         return moment( (Date.now() * this.speed) - this.delta);
     }
@@ -118,5 +120,3 @@ class Clock {
         }
     }
 }
-
-module.exports = Clock;

@@ -1,5 +1,5 @@
-const ACTIONS = require('./actions');
-const {costs:Costs,rate:Rate,time:Time} = require('../utils');
+import {ACTIONS} from './actions.js';
+import {costs as Costs,rate as Rate,time as Time} from '../Utils/index.js';
 
 
 
@@ -8,7 +8,7 @@ const {costs:Costs,rate:Rate,time:Time} = require('../utils');
 // class Actions.remind() returns a list of suggested actions of the day
 // class Actions.outcomes() returns the outcome of performed and skipped actions
 
-class Actions {
+export class Actions {
     HOURS = 24;
 
     constructor (yearOfBirth,clock){
@@ -167,5 +167,3 @@ class Actions {
         },{});
     }
 }
-
-module.exports = Actions;

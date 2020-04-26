@@ -1,4 +1,4 @@
-const {rate:Rate} = require('../Utils');
+import {rate as Rate} from '../Utils/index.js';
 // agent's roles
 // each agent can have a role a time
 // roles: ['gp','nurse','social_worker','community_worker','ward','neighbour']
@@ -19,4 +19,4 @@ let roles = [
 // calc default
 roles = Rate.defaultRate(roles);
 
-module.exports = roles;
+export const ROLES = roles;

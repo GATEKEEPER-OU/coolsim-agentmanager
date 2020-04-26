@@ -1,4 +1,4 @@
-const {rate:Rate} = require('../Utils');
+import {rate as Rate} from '../Utils/index.js';
 // agent's states
 // state: ['active','independent','dependent','death']
 // label: name and key
@@ -147,4 +147,4 @@ let status = [
 status = Rate.defaultRate(status);
 
 
-module.exports = status;
+export const STATUS = status;

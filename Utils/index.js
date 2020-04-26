@@ -1,30 +1,25 @@
-const Clock = require('./clock');
+import {Clock} from './clock.js';
 
-module.exports = {
-    costs:{
+export const costs ={
         ageing: ageingCost,
         conditions: conditionsCost,
         contingency: contingencyCost,
         weight: calcWeight
-    },
-    rate:{
+    };
+export const rate = {
         pickOne,
         defaultRate,
         test: testRate,
         check: checkRate,
         rateToSeverity: rateToSeverity,
         severityToRate: severityToRate
-    },
-    time:{
+    };
+export const time = {
         duration,
         Clock,
         scaleToRate:scaleToRate,
         rateToScale:rateToScale
-    },
-    toArray,
-    mergeMaps,
-    mergeObjects
-};
+    };
 
 // cost based on the age beyond a threshold
 function ageingCost(age) {
@@ -203,7 +198,7 @@ function rateToSeverity(rate){
 
 // general utils
 
-function toArray(list) {
+export function toArray(list) {
     if(Array.isArray(list)){return list;}
     if(list instanceof Map){
         return Array.from(list.values());
@@ -215,7 +210,7 @@ function toArray(list) {
 }
 
 
-function mergeMaps(map1,map2) {
+export function mergeMaps(map1,map2) {
     let result = new Map(map1);
     // console.log(map1,map2.keys());
     Array.from(map2.keys()).forEach(key=>{
@@ -229,7 +224,7 @@ function mergeMaps(map1,map2) {
     return result;
 }
 
-function mergeObjects(o1,o2) {
+export function mergeObjects(o1,o2) {
     let result = Object.assign({},o1);
     Object.keys(o2).forEach(key=>{
         if(!result[key]){
@@ -242,7 +237,7 @@ function mergeObjects(o1,o2) {
     return result;
 }
 
-function merge(e1, e2) {
+export function merge(e1, e2) {
     if(Array.isArray(e1) && Array.isArray(e2)){
         return e1.concat(e2);
     }
