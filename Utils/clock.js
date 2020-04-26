@@ -1,15 +1,14 @@
 const moment = require('moment');
 
 
-module.exports = class Clock {
-    // ratio 60 => 1sec = 1min
-    // ratio 3600 => 1sec = 1h
-    // ratio 86400 => 1sec = 1day
-    // ...
-    constructor(ratio = 1) {
-        this.ratio = ratio;
+class Clock {
+
+    constructor(speed = 1) {
+        // check speed and convert to number
+        this.speed = this._initSpeed(speed);
+
         // get delta between the current year and X ratio timestamps
-        this.delta = (Date.now() * this.ratio) - Date.now();
+        this.delta = (Date.now() * this.speed) - Date.now();
 
         // init map of phases of the day
         this.phases = new Map();
@@ -31,7 +30,7 @@ module.exports = class Clock {
     // current time in the simulation
     get now() {
         // return current data X ratio - delta (so the clock starts at the real date)
-        return moment( (Date.now() * this.ratio) - this.delta);
+        return moment( (Date.now() * this.speed) - this.delta);
     }
     // phase of the day in the simulation
     get phase() {
@@ -42,6 +41,13 @@ module.exports = class Clock {
         if(!parseInt(year) || isNaN(year)){return false;}
         // console.log('clock',year,this.now.get('year'));
         return parseInt( this.now.get('year') ) - parseInt(year);
+    }
+    yearOfBirth(age) {
+        // console.log('input age',age);
+        if(!age && isNaN(age)){return false;}
+        let yearOfBirth = parseInt( this.now.get('year') ) - parseInt(age);
+        // console.log('input age',age,' output year of birth ',yearOfBirth);
+        return yearOfBirth;
     }
     // time interval converted to the time of the simulation,
     // e.g. 5 hours = (5*3600s / ratio) * 1000 => sleep interval in milliseconds
@@ -83,10 +89,31 @@ module.exports = class Clock {
         // console.log(`duration in hours ${duration / (1000 * 3600)}`);
 
         // apply simulation ratio
-        duration = duration / this.ratio;
+        duration = duration / this.speed;
 
         return duration;
     }
+
+    // speed 60 => 1sec = 1min
+    // speed 3600 => 1sec = 1h
+    // speed 86400 => 1sec = 1day
+    // ...
+    _initSpeed(speed){
+        if(!speed){
+            return 1;
+        }
+
+        if(!isNaN(speed)){
+            return speed;
+        }
+
+        switch (speed){
+            case 'minute': return 60;
+            case 'hour': return 3600;
+            case 'day': return 86400;
+            default: return 1;
+        }
+    }
 }
 
-
+module.exports = Clock;

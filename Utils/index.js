@@ -8,6 +8,7 @@ module.exports = {
         weight: calcWeight
     },
     rate:{
+        pickOne,
         defaultRate,
         test: testRate,
         check: checkRate,
@@ -60,6 +61,32 @@ function calcWeight(rate,weight,age,conditions, modifier = 1) {
     let contingency = contingencyCost(age,conditions);
     return weight + (contingency * weight * modifier);
 }
+
+
+
+
+/////// RATE FUNCTIONS //////////
+
+function pickOne(entries,field='rate') {
+    let list = toArray(entries);
+    let num = Math.random();
+    let defaultIndex = 0;
+    let resultIndex = list.reduce((partial,entry,index)=>{
+        // console.log('test',num,entry[field],(partial < 0 && num < entry[field]));
+        // if val is null or 0 is ignored, e.g. rate = 0
+        if(!entry[field]) return partial;
+        if(entry.type){defaultIndex = index;}
+        if(partial < 0 && num < entry[field]) return index;
+        return partial
+    },-1);
+    if(resultIndex < 0){
+        resultIndex = defaultIndex;
+    }
+    // console.log('result index',resultIndex);
+    // console.log('result',list[resultIndex]);
+    return list[resultIndex];
+}
+
 
 // calc ratio of default
 function defaultRate(list = [],field = 'rate'){

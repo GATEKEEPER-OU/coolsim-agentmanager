@@ -28,16 +28,19 @@ const CONDITIONS = require('./conditions');
 
 class Conditions{
 
-    constructor(yearOfBirth,clock,priorConditions = []){
-        this.CONDITIONS = CONDITIONS;
-        this.BIRTH = yearOfBirth;
+    constructor({age,conditions},clock){
+        if(!clock){
+            throw new Error('clock missing');
+        }
         this.clock = clock;
+        this.CONDITIONS = CONDITIONS;
+        this.BIRTH = clock.yearOfBirth(age);
 
 
-        let prior = toArray(priorConditions)
+        let prior = toArray(conditions);
         // check prior conditions or generate some
         if(!prior || !Array.isArray(prior) || prior.length < 1){
-            // todo generate new conditions
+            // generate new conditions
             prior = this.CONDITIONS.filter(c=>Rate.check(c.rate,this.age));
         }
         this.conditionsMap = prior.reduce((partial,condition)=>{
