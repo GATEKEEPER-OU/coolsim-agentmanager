@@ -9,7 +9,7 @@ const {costs:Costs,rate:Rate,time:Time} = require('../utils');
 // class Actions.outcomes() returns the outcome of performed and skipped actions
 
 class Actions {
-    DAY = 24;
+    HOURS = 24;
 
     constructor (yearOfBirth,clock){
         this.clock = clock;
@@ -59,12 +59,15 @@ class Actions {
     }
 
     // calc of outcomes
-    outcomes(acts = [],skips = [], conditions = []){
+    outcomes(acts = [],skips = [], conditions = [], hours = 0){
         if( acts instanceof Set){
             acts = Array.from(acts);
         } else if( acts instanceof Map ){
             acts = Array.from(acts)
         }
+
+        // console.log('asdaaaaaaaaaa',skips);
+        if(!skips){skips = [];}
         if( skips instanceof Set){
             skips = Array.from(skips);
         } else if( acts instanceof Map ){
@@ -72,8 +75,8 @@ class Actions {
         }
 
         // evaluate acts
-        let {furtherSkips,positive, time} = this._acting(acts, conditions);
-
+        let {furtherSkips,positive, time} = this._acting(acts, conditions, hours);
+        // console.log('check check check check',skips,furtherSkips);
         // evaluate skips
         let {negative} = this._skipping(skips.concat(furtherSkips), conditions);
         // return outcome and time spent
@@ -81,12 +84,12 @@ class Actions {
     }
 
     // internal methods
-    _acting(acts, conditions ){
+    _acting(acts, conditions, hours ){
         // calc outcomes and further skips based on the calc of durations and benefits
         return acts.reduce((partial, action)=>{
                 // check if there is still time to act
                 let duration = Time.duration(action.duration, conditions);
-                if(partial.time + duration > this.DAY){
+                if(partial.time + duration > this.HOURS - hours){
 
                     // no time to carry out this action
                     partial.furtherSkips.push(action);

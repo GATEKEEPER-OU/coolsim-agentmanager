@@ -1,6 +1,6 @@
 const Actions = require('../Actions/');
 const Conditions = require('../Conditions/');
-const {time:Time,rate:Rate} = require('../Utils');
+const {time:Time,rate:Rate, mergeMaps} = require('../Utils');
 const STATUS = require('./status');
 const SKILLS = require('./skills');
 const ROLES = require('./roles');
@@ -88,15 +88,17 @@ class Agent{
         // evaluate impact of events
         // console.log('today events',events);
         let eventsEffects = events.reduce((partial,event)=>{
-            console.log(event.effects);
+            // console.log(event.effects);
             partial.action = partial.action.concat(event.action);
             partial.condition = partial.condition.concat(event.condition);
             return partial;
         },{action:[],condition:[]});
         // console.log('effects of events, actions\n',eventsEffects.action);
         // console.log('effects of events, conditions\n',eventsEffects.condition);
-        // todo add conditions
-        // todo add to list of actions
+        // add conditions
+        this.conditionsHelper.add(eventsEffects.condition);
+        // assess events actions
+        let eventsOutcomes = this.actionsHelper.outcomes(eventsEffects.action,[],this.conditionsHelper.list);
 
 
         // get reminders of daily activities
@@ -107,16 +109,24 @@ class Agent{
 
         // IMPORTANT TODO it can be done in bulk or cycle (for the sake of logs)
         // evaluate outcomes of actions
-        let {positive,negative,time} = this.actionsHelper.outcomes(choices.actions,choices.skips,this.conditionsHelper.list);
+        let actionsOutcomes = this.actionsHelper.outcomes(
+            choices.actions,
+            choices.skips,
+            this.conditionsHelper.list,
+            eventsOutcomes.time);
 
 
         // IMPORTANT TODO AS BULK //
         // translate outcomes to conditions
+        let positive = this._mergeOutcomes([actionsOutcomes.positive,eventsOutcomes.positive]);
+        let negative = this._mergeOutcomes([actionsOutcomes.negative,eventsOutcomes.negative]);
+        // console.log('consolidate positive',positive);
+        // console.log('consolidate negative',negative);
         let issues = this.conditionsHelper.assess(positive,negative);
-
-
-        // todo check for emerging conditions using issues
-
+        // console.log('emerging issues',issues);
+        // issues : object {type:weight} (condition type)
+        // add for emerging conditions using emerging issues
+        let emergingConditions = this.conditionsHelper.addIssues(issues);
 
         // check for a change of status
         let newStatus = this._checkStatus(this.status);
@@ -128,21 +138,34 @@ class Agent{
         // logs the day
         let day = {
             date:this.clock.date,
-            events,
+            events:{
+                list: events,
+                outcomes:{
+                    positive:eventsOutcomes.positive,
+                    negative:eventsOutcomes.negative
+                },
+                time: eventsOutcomes.time
+            },
             choices,
             activities: {
                 actions: choices.actions,
                 skips: choices.skips,
-                time,
-                outcomes:{positive,negative}
+                time: actionsOutcomes.time,
+                outcomes:{
+                    positive:actionsOutcomes.positive,
+                    negative:actionsOutcomes.negative
+                }
             },
             state:{
                 conditions: this.conditions,
-                issues,
+                issues:{
+                    emerging: issues,
+                    outcomes: emergingConditions
+                },
                 status: this.status
             }
         };
-        // this._log(day);
+        this._log(day);
         return day;
     }
 
@@ -252,6 +275,11 @@ class Agent{
         },true);
     }
 
+    _mergeOutcomes(list=[]){
+        return list.reduce((partial,outcomes)=>{
+            return mergeMaps(partial,outcomes);
+        },);
+    }
 
 
     // todo log service
@@ -265,7 +293,8 @@ class Agent{
 
         console.log(`At the end of the day, i have the following:\n`,entry.state.conditions);
         console.log(`Which results in being "${entry.state.status.label}"`);
-        console.log(`And with new issues: \n`,entry.state.issues);
+        console.log(`With new emerging issues: \n`,entry.state.issues.emerging);
+        console.log(`and outcomes:\n`,entry.state.issues.outcomes);
         // todo save in the log key: value store
         // agent: date:
     }

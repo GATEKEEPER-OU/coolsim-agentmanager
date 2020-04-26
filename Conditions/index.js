@@ -1,4 +1,4 @@
-const {time:Time,costs:Costs,rate:Rate, toArray} = require('../Utils');
+const {time:Time,costs:Costs,rate:Rate, toArray, mergeObjects} = require('../Utils');
 const CONDITIONS = require('./conditions');
 
 // Module managing the agent conditions
@@ -71,26 +71,41 @@ class Conditions{
             negative = new Map(negative);
         }
 
-
-        let emergingEvents = [];
+        let emergingIssues = [];
         // update each condition
         this.conditionsMap.forEach((condition,key) => {
             let type = condition.type;
             let {rate, weight} = condition.progression;
             // impact of progression
             let updates = [];
-            updates.push( Costs.weight(rate, weight, this.age, this.conditions) );
+            // calc
+            updates.push( Costs.weight(rate, weight, this.age, this.conditionsMap) );
             // impact of Outcomes
             updates.push( this._effects(type, positive, 'positive') );
             updates.push( this._effects(type, negative, 'negative') );
             // update events emerging from the update
-            emergingEvents = emergingEvents.concat( this._update(key,updates) );
+            emergingIssues = emergingIssues.concat( this._update(key,updates) );
         });
 
-        // return the emerging events to be used as malus by the agent
-        return emergingEvents;
+        // consolidate emerging issues in one object
+        // [{type,weight}]
+        let issues = emergingIssues.reduce((partial,issue)=>{
+            return mergeObjects(partial,issue);
+        },{});
+        // returns issues {key:weight}
+        return issues;
     }
 
+    // add a list of conditions to the current ones
+    add(conditions){
+        if(!conditions || !Array.isArray(conditions) ){
+            return false;
+        }
+        conditions.forEach((value) => this.conditionsMap.set(value.label,value) );
+        return true;
+    }
+
+    // check if a condition is among the current ones
     has(condition){
         let name = condition;
         if(typeof condition !== 'string' && condition.label){
@@ -98,6 +113,33 @@ class Conditions{
         }
 
         return this.conditionsMap.has(name);
+    }
+
+    // convert issues to conditions
+    // {type:weight}
+    addIssues(issues){
+        let issuesCopy = Object.assign({},issues);
+        // logic: not in current and of a type included isues
+        let newConditions = this.CONDITIONS.reduce((partial,condition)=>{
+            // if it is of a type included in issues
+            let type = condition.type;
+            if(!issues[type]){return partial;}
+            // if it is not current
+            if(this.conditionsMap.has(condition.label)){return partial;}
+            let severity = issues[condition.type];
+            if(severity>1){
+                issues[condition.type] = severity - 1;
+                severity = 1;
+            }
+            let newCondition = Object.assign({},condition,{severity});
+            // update conditions
+            this.conditionsMap.set(condition.label,newCondition);
+            // prepare results
+            partial.push(newCondition);
+            return partial;
+        },[]);
+        console.log('emerging conditions',newConditions);
+        return newConditions;
     }
 
     // retrieve effect of outcomes
@@ -150,7 +192,7 @@ class Conditions{
 
         // if weight > 1 update duration
         // temporary > chronic > permanent
-        if( (condition.weight + update) > 1 ){
+        if( (condition.severity + update) > 1 ){
             let delta = condition.weight + update - 1;
             events.push({type:condition.type,weight:delta});
             switch(condition.duration){
@@ -160,12 +202,12 @@ class Conditions{
                 case 'temporary':
                     condition.duration = 'chronic';
                 default:
-                    condition.weight = 1;
+                    condition.severity = 1;
             }
         }
 
         // default, update weight
-        condition.weight += update;
+        condition.severity += update;
 
         // save new state of condition
         this.conditionsMap.set(key,condition);
