@@ -159,20 +159,24 @@ export class Conditions{
         let duration = condition.duration;
         // calc update considering logic of duration
         let update = updates.reduce((partial, num)=>{
+            // console.log('===========',duration,num,partial);
             switch (duration) {
                 case 'permanent':
                     if (num < 0) {
                         // if not degenerating then discard
                         return partial;
                     }
+                    return partial + num;
                 case 'temporary':
                    if (num > 0) {
                         // if not is improving then discard
                         return partial;
                     }
+                    return partial + num;
                     break;
                 default: // chronic
                 // update new weight but never deleted;
+                //     console.log("???????????????",(partial + num));
                     return partial + num;
             }
         },0);
@@ -183,6 +187,8 @@ export class Conditions{
 
     //
     _checkAndSave(key, condition, update) {
+        // console.log("------------",key,condition,update);
+
         let events = [];
         // remove temporary condition if weight <= 0
         if (condition.duration === 'temporary' && condition.weight <= 0) {
