@@ -1,6 +1,3 @@
-import {costs as Costs, rate as Rate, toArray, mergeObjects} from '../Utils/index.js';
-import {CONDITIONS} from './conditions.js';
-
 // Module managing the agent conditions
 // todo state machine combining:
 //  1) outcomes
@@ -25,8 +22,15 @@ import {CONDITIONS} from './conditions.js';
 // the permanence within a low, mild or sever level or the condition
 // can result in an increasing risk of new conditions
 
+import Utils from '../../Utils/index.js';
+import CONDITIONS from './conditions.js';
 
-export class Conditions{
+const Costs = Utils.costs;
+const Rate = Utils.rate;
+const toArray = Utils.toArray;
+const mergeObjects = Utils.mergeObjects;
+
+export default class Conditions{
 
     constructor({age,conditions=[]},clock){
         if(!clock){

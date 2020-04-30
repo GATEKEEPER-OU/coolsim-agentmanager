@@ -1,4 +1,4 @@
-import {rate as Rate} from '../Utils/index.js';
+import Utils from '../Utils/index.js';
 // agent's states
 // state: ['active','independent','dependent','death']
 // label: name and key
@@ -15,6 +15,9 @@ import {rate as Rate} from '../Utils/index.js';
 //          type: ['mental','social','physical','behavioural']
 // rate: probability of having a state
 // type (optional): default, rate = 1 - sum of all other
+
+const Rate = Utils.rate;
+
 
 let status = [
     {label:'death',rate:0,
@@ -147,4 +150,4 @@ let status = [
 status = Rate.defaultRate(status);
 
 
-export const STATUS = status;
+export default STATUS = status;

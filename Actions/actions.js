@@ -17,7 +17,7 @@
 //       type: category of benefit ['mental','social','physical','behavioural']
 // duration:  duration in hours and errors (array of rates representing how much the duration can deviate [0.1,-0.1])
 
-export const ACTIONS = [
+export default ACTIONS = [
     // dailies
     {
         label:'study',

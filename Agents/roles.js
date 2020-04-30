@@ -1,4 +1,3 @@
-import {rate as Rate} from '../Utils/index.js';
 // agent's roles
 // each agent can have a role a time
 // roles: ['gp','nurse','social_worker','community_worker','ward','neighbour']
@@ -6,6 +5,10 @@ import {rate as Rate} from '../Utils/index.js';
 // rate: probability of having someone with the role
 // skills: [array] of skills a role has as requirement
 // type: default => ratio is 1 - sum of all other ratios
+
+import Utils from '../Utils/index.js';
+
+const Rate = Utils.rate;
 
 let roles = [
     {label:'gp',rate:0.001,skills:['health visit','first aid','nutrition','calling']},
@@ -19,4 +22,4 @@ let roles = [
 // calc default
 roles = Rate.defaultRate(roles);
 
-export const ROLES = roles;
+export default ROLES = roles;

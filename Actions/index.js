@@ -1,14 +1,16 @@
-import {ACTIONS} from './actions.js';
-import {costs as Costs,rate as Rate,time as Time} from '../Utils/index.js';
+import ACTIONS from './actions.js';
+import Utils from '../../Utils/index.js';
 
-
+const Costs = Utils.cost;
+const Rate = Utils.rate;
+const Time = Utils.time;
 
 // actions have a cost and risk factor related to the agent's state
 // agents get the daily list and choose which actions to carry on and which not
 // class Actions.remind() returns a list of suggested actions of the day
 // class Actions.outcomes() returns the outcome of performed and skipped actions
 
-export class Actions {
+export default class Actions {
     HOURS = 24;
 
     constructor (yearOfBirth,clock){
