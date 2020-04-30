@@ -8,6 +8,7 @@
     "moment": "^2.24.0",
     "nano": "^8.2.2",
     "promise.allsettled": "^1.0.2",
+    "uniqid": "^5.2.0",
     "util": "^0.12.2"
   },
   "devDependencies": {},
