@@ -2,7 +2,7 @@
 // monitor generate messages, logs, etc. as response
 // for instance, a wearable is monitor that is able to track bio-signals and generate actions
 
-export default MONITOR = [
+const MONITOR = [
     {
         label:"social monitoring",
         rate:0.05,
@@ -15,7 +15,6 @@ export default MONITOR = [
             type:"message",
             fields:["address"],
             payload: {
-                section:"status",
                 message: [
                     {
                         addressee: "nurse",
@@ -27,3 +26,6 @@ export default MONITOR = [
         }
     }
 ];
+
+
+export default MONITOR;
