@@ -17,7 +17,7 @@
 //       type: category of benefit ['mental','social','physical','behavioural']
 // duration:  duration in hours and errors (array of rates representing how much the duration can deviate [0.1,-0.1])
 
-export default ACTIONS = [
+const ACTIONS = [
     // dailies
     {
         label:'study',
@@ -251,3 +251,5 @@ export default ACTIONS = [
         duration:{ hours:8, errors:[-0.3,0.2] }
     },
 ];
+
+export default ACTIONS;

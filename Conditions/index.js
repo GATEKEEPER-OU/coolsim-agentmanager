@@ -25,7 +25,7 @@
 import Utils from '../../Utils/index.js';
 import CONDITIONS from './conditions.js';
 
-const Costs = Utils.costs;
+const Costs = Utils.cost;
 const Rate = Utils.rate;
 const toArray = Utils.toArray;
 const mergeObjects = Utils.mergeObjects;

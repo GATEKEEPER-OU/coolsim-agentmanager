@@ -6,11 +6,11 @@
 // skills: [array] of skills a role has as requirement
 // type: default => ratio is 1 - sum of all other ratios
 
-import Utils from '../Utils/index.js';
+import Utils from '../../Utils/index.js';
 
 const Rate = Utils.rate;
 
-let roles = [
+let ROLES = [
     {label:'gp',rate:0.001,skills:['health visit','first aid','nutrition','calling']},
     {label:'nurse',rate:0.005,skills:['health visit','first aid','nutrition','calling']},
     {label:'social worker',rate:0.001,skills:['counseling','nutrition','calling']},
@@ -20,6 +20,6 @@ let roles = [
 ];
 
 // calc default
-roles = Rate.defaultRate(roles);
+ROLES = Rate.defaultRate(ROLES);
 
-export default ROLES = roles;
+export default ROLES;

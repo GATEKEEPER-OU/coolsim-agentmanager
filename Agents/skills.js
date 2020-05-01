@@ -6,7 +6,7 @@
 // effects:[array] what can cause to a subject
 //         {label, source (list of effect), ratio (override the origin ratio}
 
-export default SKILLS = [
+const SKILLS = [
     {label:'health visit',rate:0.1,ending:0.1,
         roles: ['gp','nurse'],
         effects:[
@@ -79,3 +79,5 @@ export default SKILLS = [
         ]
     },
 ];
+
+export default SKILLS;

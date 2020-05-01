@@ -1,4 +1,4 @@
-import Utils from '../Utils/index.js';
+import Utils from '../../Utils/index.js';
 // agent's states
 // state: ['active','independent','dependent','death']
 // label: name and key
@@ -19,7 +19,7 @@ import Utils from '../Utils/index.js';
 const Rate = Utils.rate;
 
 
-let status = [
+let STATUS = [
     {label:'death',rate:0,
         decline:{
             from:['active','independent','dependent'],
@@ -147,7 +147,7 @@ let status = [
 ];
 
 // calc default
-status = Rate.defaultRate(status);
+STATUS = Rate.defaultRate(STATUS);
 
 
-export default STATUS = status;
+export default STATUS;

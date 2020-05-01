@@ -9,7 +9,7 @@
 //      weight: -1 to 1, // gets more or less severe and how much over time
 // }
 
-export default CONDITIONS = [
+const CONDITIONS = [
     { label:'depression', type: 'mental', duration:'chronic', severity:0.5, rate:0.05, progression: {
         scale: 'day',
         rate: 0.2,
@@ -139,3 +139,5 @@ export default CONDITIONS = [
         }
     }
 ];
+
+export default CONDITIONS;

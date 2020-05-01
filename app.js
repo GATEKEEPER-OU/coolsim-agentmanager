@@ -1,10 +1,10 @@
 // App.js
 // todo some description
 
-import Utils from './Utils/index.js';
+import Utils from '../Utils/index.js';
 import Actions from './Actions/index.js';
 import Conditions from './Conditions/index.js';
-import Events from './Events/index.js';
+import Events from '../Locations/Events/index.js';
 import Agent from './Agents/index.js';
 
 const Time = Utils.time;

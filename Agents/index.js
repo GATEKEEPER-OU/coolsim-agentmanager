@@ -24,15 +24,15 @@
 import uniqid from 'uniqid';
 import Actions from '../Actions/index.js';
 import Conditions from '../Conditions/index.js';
-import Messages from "./Messages/index.js";
-import Movements from "./Movements/index.js";
-import Utils from '../Utils/index.js';
+import Interact from "../Interact/index.js";
+import Utils from '../../Utils/index.js';
 import STATUS from './status.js';
 import SKILLS from './skills.js';
 import ROLES from './roles.js';
-import Monitoring from './Monitoring/index.js';
+import Monitoring from '../Monitoring/index.js';
 
 const Time = Utils.time;
+const Messages = Interact.messaging;
 const Rate = Utils.rate;
 const mergeMaps = Utils.mergeMaps;
 
@@ -325,7 +325,7 @@ export default class Agent{
 
         Monitoring.forEach(monitor=>{
             try{
-                let payload = monitor(entry);
+                let payload = monitor.process(entry);
                 if(payload){
                     this.messaging.send(payload);
                 }
