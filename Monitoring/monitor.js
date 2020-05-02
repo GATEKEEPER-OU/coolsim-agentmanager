@@ -4,21 +4,22 @@
 
 const MONITOR = [
     {
-        label:"save",
-        rate:0.05,
+        label:"log",
+        rate:1,
         test:{
-            fields:["status","label"],
-            value:"dependent",
-            operator:"==="
+            rate:1,
+            fields:[]
         },
         action:{
-            type:"store"
+            type:"store",
+            section:"logs"
         }
     },
     {
         label:"social monitoring",
-        rate:0.05,
+        rate:1,
         test:{
+            rate:0.05,
             fields:["status","label"],
             value:"dependent",
             operator:"==="

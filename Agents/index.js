@@ -35,6 +35,7 @@ const Time = Utils.time;
 const Messages = Interact.messaging;
 const Rate = Utils.rate;
 const mergeMaps = Utils.mergeMaps;
+const Store = Utils.store;
 
 
 
@@ -52,7 +53,7 @@ export default class Agent{
         this.clock = clock;
 
         this.id = agent && agent.id ? agent.id : uniqid;
-        this.address = agent && agent.address ? agent.address: `agent-${agent.name}-${this.id}`;
+        this.address = agent && agent.address ? agent.address: `agent-${this.id}`;
 
 
         // init with the agent information
@@ -61,7 +62,8 @@ export default class Agent{
         this.yearOfBirth = this.clock.yearOfBirth(age);
         // console.log('year of birth',this.yearOfBirth);
 
-
+        // init store
+        this.store = new Store("agent",this.id);
 
         // init role
         this.role = this._initRole(role);
@@ -83,11 +85,11 @@ export default class Agent{
         this.conditionsHelper = new Conditions({age,conditions},this.clock);
 
 
-        // TODO check which monitoring system apply
-        this.monitoring = Monitoring;
+        // check which monitoring system apply
+        // generate a list using rates
+        this.monitoring = Monitoring();
 
-
-        // if billboard provided, enable messanging
+        // if billboard provided, enable messaging
         if(board){
             this.messaging = new Messages(board);
         }
@@ -160,7 +162,7 @@ export default class Agent{
 
         // logs the day
         let day = {
-            id:this.id,
+            agent:this.id,
             address:this.address,
             date:this.clock.date,
             events:{
@@ -320,14 +322,26 @@ export default class Agent{
         console.log(`With new emerging issues: \n`,entry.state.issues.emerging);
         console.log(`and outcomes:\n`,entry.state.issues.outcomes);
 
-
-        if(!this.messaging || !this.monitoring){return }
+        if(!this.monitoring){return }
 
         this.monitoring.forEach(monitor=>{
             try{
-                let payload = monitor.process(entry,this.clock.date);
-                if(payload){
-                    this.messaging.send(payload);
+                let res = monitor.process(entry,this.clock.date);
+
+                // send message to the billboard
+                if(res.message){
+                    if(this.messaging){
+                        this.messaging.send(res.message);
+                    }
+                }else if(res.data && res.section){
+
+                    if(this.store) {
+                        // send to the store
+                        this.store.save(res.section, res.data);
+                        // this.store.readBySection(res.section)
+                        //     .then(res => console.log("log agent", res.docs.length))
+                        //     .catch(err => console.error(err));
+                    }
                 }
 
             }catch (err){
