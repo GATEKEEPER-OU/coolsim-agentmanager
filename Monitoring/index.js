@@ -19,7 +19,7 @@ export class Monitor {
         this.rateTest = Utils.rate.test
     }
 
-    process(state){
+    process(state,date){
 
         // test the rate
         if (!this.rateTest(this.rate)) {
@@ -30,11 +30,19 @@ export class Monitor {
             return false
         }
 
+        let p = {};
+        if(date){
+            p.date = date;
+        }
+
         // act
         switch (this.action.type) {
+
             case 'message':
+                return Object.assign( p,this._createMessage(state,this.action) );
+
             default:
-                return this._createMessage(state,this.action);
+                return Object.assign(p,state);
         }
     }
     _createMessage(state,{fields,payload}) {
