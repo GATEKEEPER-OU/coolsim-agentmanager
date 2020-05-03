@@ -30,12 +30,12 @@ import STATUS from './status.js';
 import SKILLS from './skills.js';
 import ROLES from './roles.js';
 import Monitoring from '../Monitoring/index.js';
+import Store from "../../Store/index.js";
 
 const Time = Utils.time;
 const Messages = Interact.messaging;
 const Rate = Utils.rate;
 const mergeMaps = Utils.mergeMaps;
-const Store = Utils.store;
 
 
 
@@ -195,6 +195,15 @@ export default class Agent{
         this._monitoring(day);
         return day;
     }
+
+    // todo clean store
+
+
+    // todo go to sleep
+
+
+
+
 
     _initRole(role){
         let agentRole;
