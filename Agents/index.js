@@ -39,7 +39,6 @@ const mergeMaps = Utils.mergeMaps;
 
 
 
-
 export default class Agent{
     // input the state of the agent
     // {age, conditions, state, role, skills}
@@ -72,6 +71,9 @@ export default class Agent{
         this.skillsMap = this._initSkills(skills);
         // console.log('agent skills',this.skillsMap);
 
+        // flag to stop the agent from acting
+        // e.g. death is final status
+        this.final = false;
 
 
         // console.log('role ',this.role);
@@ -109,6 +111,11 @@ export default class Agent{
 
     //
     dailyRoutine(events = []){
+        // check if the agent closed its lifecycle
+        if(this.final){
+            return {};
+        }
+
         // evaluate impact of events
         // console.log('today events',events);
         let eventsEffects = events.reduce((partial,event)=>{
@@ -157,6 +164,9 @@ export default class Agent{
         if(this.status.label !== newStatus.label) {
             console.log(`I was ${this.status.label}, but now I'm ${newStatus.label}`);
             this.status = newStatus;
+            if(this.status.type === "final"){
+                this.final = true;
+            }
         }
 
 

@@ -6,8 +6,7 @@ import Actions from './Actions/index.js';
 import Conditions from './Conditions/index.js';
 import Events from '../Locations/Events/index.js';
 import Agent from './Agents/index.js';
-import PouchDB from 'pouchdb';
-import Find from 'pouchdb-find';
+import Store from "../Store/index.js";
 
 
 const Time = Utils.time;
@@ -16,15 +15,7 @@ const Time = Utils.time;
 const timeSpeed = 3600; // 1s = 1h
 
 const clock = new Time.Clock(timeSpeed);
-
-
-// PouchDB.plugin(Find);
-// let store = new PouchDB("agents-logs");
-// let remoteStore = new PouchDB("http://localhost:5985/agents-logs");
-// store.replicate.to(remoteStore, {live: true});
-
-let store = new Utils.store("simulation");
-
+const store = new Store("simulation");
 
 // tests actions
 let actions = new Actions(1984,clock);
@@ -80,7 +71,7 @@ async function day() {
 async function logging() {
     return new Promise((resolve,reject)=> {
         store.readBySection("agents").then(res => {
-            // console.log("number of logs", res.docs.length);
+            // console.log("Simulation logs", res.docs.length);
             resolve(res);
         }).catch(err => reject(err));
     });

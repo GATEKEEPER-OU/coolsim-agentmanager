@@ -20,7 +20,7 @@ const Rate = Utils.rate;
 
 
 let STATUS = [
-    {label:'death',rate:0,
+    {label:'death',rate:0, type:"final",
         decline:{
             from:['active','independent','dependent'],
             factors: [
