@@ -51,9 +51,10 @@ export default class Agent{
         this.HOURS = 24;
         this.clock = clock;
 
-        this.id = agent && agent.id ? agent.id : uniqid;
-        this.address = agent && agent.address ? agent.address: `agent-${this.id}`;
+        this.id = (agent && agent.id) ? agent.id : uniqid();
+        this.address = (agent && agent.address) ? agent.address : `agent-${this.id}`;
 
+        this.days = 0;
 
         // init with the agent information
         let {age = 0, conditions = [], role, state, skills} = agent;
@@ -95,6 +96,8 @@ export default class Agent{
         if(board){
             this.messaging = new Messages(board);
         }
+
+        // console.log(this);
 
     }
     get age(){
@@ -162,7 +165,7 @@ export default class Agent{
         // check for a change of status
         let newStatus = this._checkStatus(this.status);
         if(this.status.label !== newStatus.label) {
-            console.log(`I was ${this.status.label}, but now I'm ${newStatus.label}`);
+            // console.log(`I was ${this.status.label}, but now I'm ${newStatus.label}`);
             this.status = newStatus;
             if(this.status.type === "final"){
                 this.final = true;
@@ -170,16 +173,21 @@ export default class Agent{
         }
 
 
+        // update days counter
+        this.days ++;
+
+
         // logs the day
         let day = {
             agent:this.id,
             address:this.address,
             date:this.clock.date,
+            day: this.days,
             events:{
                 list: events,
                 outcomes:{
-                    positive:eventsOutcomes.positive,
-                    negative:eventsOutcomes.negative
+                    positive:Utils.mapToObject(eventsOutcomes.positive),
+                    negative:Utils.mapToObject(eventsOutcomes.negative)
                 },
                 time: eventsOutcomes.time
             },
@@ -189,15 +197,16 @@ export default class Agent{
                 skips: choices.skips,
                 time: actionsOutcomes.time,
                 outcomes:{
-                    positive:actionsOutcomes.positive,
-                    negative:actionsOutcomes.negative
+                    positive:Utils.mapToObject(actionsOutcomes.positive),
+                    negative:Utils.mapToObject(actionsOutcomes.negative)
                 }
             },
             state:{
+                age: this.age,
                 conditions: this.conditions,
                 issues:{
                     emerging: issues,
-                    outcomes: emergingConditions
+                    outcomes: Utils.mapToObject(emergingConditions)
                 },
                 status: this.status
             }
@@ -329,14 +338,14 @@ export default class Agent{
 
 
     _monitoring(entry){
-        console.log('This morning I got involved in',entry.events);
+        console.log(`This morning I got involved for ${entry.events.time} hours in\n`,entry.events.list.map(e=>e.label).join(", "));
+        console.log('With outcomes \n',entry.events.outcomes);
         console.log('About my activities');
-        console.log(`I spent ${entry.activities.time} hours doing: \n`,entry.activities.actions);
+        console.log(`I spent ${entry.activities.time} hours doing: \n`,entry.activities.actions.map(e=>e.label).join(", "));
         console.log('With these positive outcomes: \n',entry.activities.outcomes.positive);
-        console.log(`But I did not manage to: \n`,entry.activities.skips);
+        console.log(`But I did not manage to: \n`,entry.activities.skips.map(e=>e.label).join(", "));
         console.log('With these negative outcomes',entry.activities.outcomes.negative);
-
-        console.log(`At the end of the day, i have the following:\n`,entry.state.conditions);
+        console.log(`At the end of the day, i have the following:\n`,entry.state.conditions.map(e=>e.duration+" "+e.label).join(", "));
         console.log(`Which results in being "${entry.state.status.label}"`);
         console.log(`With new emerging issues: \n`,entry.state.issues.emerging);
         console.log(`and outcomes:\n`,entry.state.issues.outcomes);

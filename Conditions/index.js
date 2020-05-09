@@ -142,7 +142,7 @@ export default class Conditions{
             partial.push(newCondition);
             return partial;
         },[]);
-        console.log('emerging conditions',newConditions);
+        // console.log('emerging conditions',newConditions);
         return newConditions;
     }
 
@@ -218,6 +218,9 @@ export default class Conditions{
 
         // default, update weight
         condition.severity += update;
+        // add severity level
+        condition.severityLevel = Rate.rateToSeverity(condition.severity);
+
 
         // save new state of condition
         this.conditionsMap.set(key,condition);

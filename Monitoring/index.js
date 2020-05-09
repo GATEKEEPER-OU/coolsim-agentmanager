@@ -64,7 +64,6 @@ export class Monitor {
         return newPayload;
     }
     _test(state,{fields,value,operator}) {
-        console.log();
         if(!fields || Array.isArray(fields) || fields.length === 0){
             return true;
         }

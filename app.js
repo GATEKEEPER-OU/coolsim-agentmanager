@@ -2,8 +2,6 @@
 // todo some description
 
 import Utils from '../Utils/index.js';
-import Actions from './Actions/index.js';
-import Conditions from './Conditions/index.js';
 import Events from '../Locations/Events/index.js';
 import Agent from './Agents/index.js';
 import Store from "../Store/index.js";
@@ -12,31 +10,17 @@ import Store from "../Store/index.js";
 const Time = Utils.time;
 
 // init of the simulation clock
-const timeSpeed = 3600; // 1s = 1h
+const timeSpeed = "day"; // 1s = 1day
 
 const clock = new Time.Clock(timeSpeed);
 const store = new Store("simulation");
 
 // tests actions
-let actions = new Actions(1984,clock);
-let conditions = new Conditions(1984,clock);
 let events = new Events(clock);
 
 
-
-// let reminders = actions.remind([]);
-// let actionOutcomes = actions.outcomes(reminders,[],[])
-// let emergingEvents = conditions.assess([],[]);
-//
-//
-//
-// console.log('Conditions.assess',emergingEvents);
-// console.log('Actions.remind',reminders);
-// console.log('Actions.outcomes',actionOutcomes );
-
-
 //  test agent
-let agentInit = {age:55};
+let agentInit = {age:35};
 let agent = new Agent(agentInit);
 
 
@@ -50,12 +34,13 @@ console.log(`Agent's skills: ${agent.skills.map(e=>e.label)}`);
 simulation(10);
 
 async function simulation(days) {
-
+    console.time("Simulation time");
     for(let i = 0; i < days; i++){
         console.log(`Day ${i+1}`);
         await day();
         await logging();
     }
+    console.timeEnd("Simulation time");
 }
 
 
