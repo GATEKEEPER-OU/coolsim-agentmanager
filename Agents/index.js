@@ -110,7 +110,9 @@ export default class Agent{
     get skills(){
         return Array.from(this.skillsMap.values());
     }
-
+    get stats(){
+        return this.conditionsHelper.stats;
+    }
 
     //
     dailyRoutine(events = []){
@@ -184,7 +186,7 @@ export default class Agent{
             date:this.clock.date,
             day: this.days,
             events:{
-                list: events,
+                list: events.map(e=>e.label),
                 outcomes:{
                     positive:Utils.mapToObject(eventsOutcomes.positive),
                     negative:Utils.mapToObject(eventsOutcomes.negative)
@@ -193,8 +195,8 @@ export default class Agent{
             },
             choices,
             activities: {
-                actions: choices.actions,
-                skips: choices.skips,
+                actions: choices.actions.map(e=>e.label),
+                skips: choices.skips.map(e=>e.label),
                 time: actionsOutcomes.time,
                 outcomes:{
                     positive:Utils.mapToObject(actionsOutcomes.positive),
@@ -208,7 +210,8 @@ export default class Agent{
                     emerging: issues,
                     outcomes: Utils.mapToObject(emergingConditions)
                 },
-                status: this.status
+                status: this.status,
+                stats: this.stats
             }
         };
         this._monitoring(day);
@@ -338,15 +341,16 @@ export default class Agent{
 
 
     _monitoring(entry){
-        console.log(`This morning I got involved for ${entry.events.time} hours in\n`,entry.events.list.map(e=>e.label).join(", "));
+        console.log(`This morning I got involved for ${entry.events.time} hours in\n`,entry.events.list.join(", "));
         console.log('With outcomes \n',entry.events.outcomes);
         console.log('About my activities');
-        console.log(`I spent ${entry.activities.time} hours doing: \n`,entry.activities.actions.map(e=>e.label).join(", "));
+        console.log(`I spent ${entry.activities.time} hours doing: \n`,entry.activities.actions.join(", "));
         console.log('With these positive outcomes: \n',entry.activities.outcomes.positive);
-        console.log(`But I did not manage to: \n`,entry.activities.skips.map(e=>e.label).join(", "));
+        console.log(`But I did not manage to: \n`,entry.activities.skips.join(", "));
         console.log('With these negative outcomes',entry.activities.outcomes.negative);
         console.log(`At the end of the day, i have the following:\n`,entry.state.conditions.map(e=>e.duration+" "+e.label).join(", "));
         console.log(`Which results in being "${entry.state.status.label}"`);
+        console.log(`Here my stats`,entry.state.stats);
         console.log(`With new emerging issues: \n`,entry.state.issues.emerging);
         console.log(`and outcomes:\n`,entry.state.issues.outcomes);
 

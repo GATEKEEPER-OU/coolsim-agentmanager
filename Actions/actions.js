@@ -33,7 +33,7 @@ const ACTIONS = [
     },
     {
         label:'sleep',
-        type:'health',
+        type:'self',
         rate:1,
         risks:[ { rate:0.3, weight:0.1, type:'physical' } ],
         benefits:[ { rate:0.05, weight:0.05, type:'physical' } ],
@@ -41,7 +41,7 @@ const ACTIONS = [
     },
     {
         label:'rest',
-        type:'health',
+        type:'self',
         rate:1,
         risks:[ { rate:0.3, weight:0.1, type:'physical' } ],
         benefits:[ { rate:0.05, weight:0.05, type:'physical' } ],
@@ -237,7 +237,7 @@ const ACTIONS = [
     },
     {
         label:'vacation',
-        type:'health',
+        type:'self',
         rate:0.03,
         risks:[
             { rate:0.3, weight:0.1, type:'physical' },

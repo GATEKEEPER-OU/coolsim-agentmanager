@@ -31,7 +31,7 @@ console.log(`Agent's role: ${agent.role.label}`);
 console.log(`Agent's skills: ${agent.skills.map(e=>e.label)}`);
 // console.log(`Agent's conditions:`, agent.conditions);
 
-simulation(10);
+simulation(100);
 
 async function simulation(days) {
     console.time("Simulation time");

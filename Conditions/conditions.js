@@ -52,87 +52,87 @@ const CONDITIONS = [
         weight: 0.05,
         }
     },
-    { label:'metabolic disorder', type: 'health', duration:'chronic', severity:0.3, rate:0.1, progression: {
+    { label:'metabolic disorder', type: 'physical', duration:'chronic', severity:0.3, rate:0.1, progression: {
         scale: 'month',
         rate: 0.01,
         weight: 0.05,
         }
     },
-    { label:'rheumatic diseases', type: 'health', duration:'chronic', severity:0.5, rate:0.1, progression: {
+    { label:'rheumatic diseases', type: 'physical', duration:'chronic', severity:0.5, rate:0.1, progression: {
         scale: 'month',
         rate: 0.01,
         weight: 0.05,
         }
     },
-    { label:'exhaustion', type: 'health', duration:'temporary', severity:0.1, rate:0.1, progression: {
+    { label:'exhaustion', type: 'physical', duration:'temporary', severity:0.1, rate:0.1, progression: {
         scale: 'day',
         rate: 0.01,
         weight: 0.05,
         }
     },
-    { label:'cancer', type: 'health', duration:'chronic', severity:0.8, rate:0.05, progression: {
+    { label:'cancer', type: 'physical', duration:'chronic', severity:0.8, rate:0.05, progression: {
         scale: 'month',
         rate: 0.3,
         weight: 0.5,
         }
     },
-    { label:'heart disease', type: 'health', duration:'chronic', severity:0.6, rate:0.05, progression: {
+    { label:'heart disease', type: 'physical', duration:'chronic', severity:0.6, rate:0.05, progression: {
         scale: 'week',
         rate: 0.1,
         weight: 0.1,
         }
     },
-    { label:'flu', type: 'health', duration:'temporary', severity:0.4, rate:0.2, progression: {
+    { label:'flu', type: 'physical', duration:'temporary', severity:0.4, rate:0.2, progression: {
         scale: 'day',
         rate: 0.1,
         weight: -0.1,
         }
     },
-    { label:'injury', type: 'health', duration:'temporary', severity:0.4, rate:0.1, progression: {
+    { label:'injury', type: 'physical', duration:'temporary', severity:0.4, rate:0.1, progression: {
         scale: 'day',
         rate: 0.1,
         weight: -0.1,
         }
     },
-    { label:'impairment', type: 'health', duration:'permanent', severity:0.5, rate:0.05, progression: {
+    { label:'impairment', type: 'physical', duration:'permanent', severity:0.5, rate:0.05, progression: {
         scale: 'month',
         rate: 0.05,
         weight: 0.01,
         }
     },
-    { label:'dementia', type: 'health', duration:'permanent', severity:0.7, rate:0.005, progression: {
+    { label:'dementia', type: 'physical', duration:'permanent', severity:0.7, rate:0.005, progression: {
         scale: 'month',
         rate: 0.1,
         weight: 0.1,
         }
     },
-    { label:'allergy', type: 'health', duration:'chronic', severity:0.2,  rate:0.1, progression: {
+    { label:'allergy', type: 'physical', duration:'chronic', severity:0.2,  rate:0.1, progression: {
         scale: 'month',
         rate: 0.01,
         weight: 0.1,
         }
     },
-    { label:'poisoning', type: 'health', duration:'temporary', severity:0.6, rate:0.05, progression: {
+    { label:'poisoning', type: 'physical', duration:'temporary', severity:0.6, rate:0.05, progression: {
         scale: 'day',
         rate: 0.01,
         weight: -0.01,
         }
     },
-    { label:'bleeding', type: 'health', duration:'temporary', severity:0.3, rate:0.05, progression: {
+    { label:'bleeding', type: 'physical', duration:'temporary', severity:0.3, rate:0.05, progression: {
         scale: 'day',
         rate: 0.01,
         weight: -0.4,
         }
     },
     {
-    label: 'concussion', type: 'health', duration: 'temporary', severity: 0.5, progression: {
+    label: 'concussion', type: 'physical', duration: 'temporary', severity: 0.5, progression: {
             scale: 'day',
             rate: 0.8,
             weight: -0.1
         }
     },
     {
-    label: 'breaking', type: 'health', duration: 'temporary', severity: 0.5, progression: {
+    label: 'breaking', type: 'physical', duration: 'temporary', severity: 0.5, progression: {
         scale: 'month',
         rate: 0.8,
         weight: -0.02,

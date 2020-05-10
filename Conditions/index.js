@@ -52,16 +52,45 @@ export default class Conditions{
             return partial;
         },new Map());
         // console.log(this.conditionsMap);
-    }
 
+        this.conditionTypes = new Set(CONDITIONS.map(v=>v.type));
+    }
+    get conditionsByType(){
+        let res = this.types.reduce((r,v)=>{
+            r[v] = {
+                label:v,
+                list:[],
+                severity:0,
+                level:1
+            };
+            return r;
+        },{});
+        let conds = Array.from(this.conditionsMap.keys()).reduce((r,v)=>{
+            let {label,type,severity} = this.conditionsMap.get(v);
+            r[type].list.push(label);
+            r[type].severity += severity;
+            r[type].level = 1 - r[type].severity;
+            return r;
+        },res);
+
+        return conds;
+    }
     get age(){
         return this.clock.age(this.BIRTH);
     }
     get status (){
         return Array.from(this.conditionsMap.values());
     };
+    get types(){return Array.from(this.conditionTypes)}
+
+    get stats(){
+        let c = this.conditionsByType;
+        // calc stats
+        return Object.keys( c ).map(k=>c[k]);
+    }
 
     static get getConditions(){return CONDITIONS;}
+    static get getTypes(){ return Array.from(new Set(CONDITIONS.map(v=>v.type)) ) }
 
 
     // calc of updates of conditions, given a positive and negative outcomes
