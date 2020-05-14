@@ -12,14 +12,12 @@ const Time = Utils.time;
 
 export default class Actions {
     HOURS = 24;
-
-    constructor (yearOfBirth,clock){
-        this.clock = clock;
-        this.BIRTH = yearOfBirth;
-        this.ACTIONS = ACTIONS;
+    ACTIONS = ACTIONS;
+    constructor (age = 30){
+        this.age = age;
     }
-    get age(){
-        return this.clock.age(this.BIRTH);
+    set setAge(age){
+        this.age = age;
     }
     get list(){
         return this.ACTIONS;

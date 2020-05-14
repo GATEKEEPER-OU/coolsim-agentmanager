@@ -7,7 +7,7 @@ const MONITOR = [
         label:"log",
         rate:1,
         test:{
-            rate:1,
+            rate:0,
             fields:[]
         },
         action:{

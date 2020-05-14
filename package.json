@@ -5,6 +5,7 @@
   "main": "app.js",
   "dependencies": {
     "axios": "^0.19.2",
+    "lodash": "^4.17.15",
     "moment": "^2.24.0",
     "nano": "^8.2.2",
     "pouchdb": "^7.2.1",

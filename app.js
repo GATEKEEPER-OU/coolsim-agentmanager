@@ -26,9 +26,9 @@ let agent = new Agent(agentInit);
 
 // console.log(`Agent:`,agent);
 // console.log(`Now:`,clock.now.get('year'));
-console.log(`Agent's age: ${agent.age}`);
-console.log(`Agent's role: ${agent.role.label}`);
-console.log(`Agent's skills: ${agent.skills.map(e=>e.label)}`);
+// console.log(`Agent's age: ${agent.age}`);
+// console.log(`Agent's role: ${agent.role.label}`);
+// console.log(`Agent's skills: ${agent.skills.map(e=>e.label)}`);
 // console.log(`Agent's conditions:`, agent.conditions);
 
 simulation(100);

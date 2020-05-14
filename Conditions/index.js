@@ -31,15 +31,10 @@ const toArray = Utils.toArray;
 const mergeObjects = Utils.mergeObjects;
 
 export default class Conditions{
+    CONDITIONS = CONDITIONS;
+    constructor({age=30,conditions=[]}){
 
-    constructor({age,conditions=[]},clock){
-        if(!clock){
-            throw new Error('clock missing');
-        }
-        this.clock = clock;
-        this.CONDITIONS = CONDITIONS;
-        this.BIRTH = clock.yearOfBirth(age);
-
+        this.age = age;
 
         let prior = toArray(conditions);
         // check prior conditions or generate some
@@ -54,6 +49,10 @@ export default class Conditions{
         // console.log(this.conditionsMap);
 
         this.conditionTypes = new Set(CONDITIONS.map(v=>v.type));
+    }
+
+    set setAge(age){
+        this.age = age;
     }
     get conditionsByType(){
         let res = this.types.reduce((r,v)=>{
@@ -72,11 +71,8 @@ export default class Conditions{
             r[type].level = 1 - r[type].severity;
             return r;
         },res);
-
+        // console.log("conditions by type",conds);
         return conds;
-    }
-    get age(){
-        return this.clock.age(this.BIRTH);
     }
     get status (){
         return Array.from(this.conditionsMap.values());

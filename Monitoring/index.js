@@ -16,7 +16,8 @@ export class Monitor {
         this.test = monitor.test;
         this.rate = monitor.test.rate ? monitor.test.rate : 1;
         this.action = monitor.action;
-        this.rateTest = Utils.rate.test
+        this.rateTest = Utils.rate.test;
+        this.label = monitor.label
     }
 
     process(state,date){

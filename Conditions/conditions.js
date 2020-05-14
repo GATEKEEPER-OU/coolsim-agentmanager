@@ -28,13 +28,13 @@ const CONDITIONS = [
         weight: 0.01,
         }
     },
-    { label:'isolation', type: 'behavioral', duration:'temporary', severity:0.1, rate:0.01, progression: {
+    { label:'isolation', type: 'behavioural', duration:'temporary', severity:0.1, rate:0.01, progression: {
         scale: 'month',
         rate: 0.07,
         weight: 0.5,
         }
     },
-    { label:'self-isolation', type: 'behavioral', duration:'temporary', severity:0.1, rate:0.05, progression: {
+    { label:'self-isolation', type: 'social', duration:'temporary', severity:0.1, rate:0.05, progression: {
         scale: 'month',
         rate: 0.1,
         weight: 0.05,
@@ -64,7 +64,7 @@ const CONDITIONS = [
         weight: 0.05,
         }
     },
-    { label:'exhaustion', type: 'physical', duration:'temporary', severity:0.1, rate:0.1, progression: {
+    { label:'exhaustion', type: 'mental', duration:'temporary', severity:0.1, rate:0.1, progression: {
         scale: 'day',
         rate: 0.01,
         weight: 0.05,
@@ -100,7 +100,7 @@ const CONDITIONS = [
         weight: 0.01,
         }
     },
-    { label:'dementia', type: 'physical', duration:'permanent', severity:0.7, rate:0.005, progression: {
+    { label:'dementia', type: 'mental', duration:'permanent', severity:0.7, rate:0.005, progression: {
         scale: 'month',
         rate: 0.1,
         weight: 0.1,
