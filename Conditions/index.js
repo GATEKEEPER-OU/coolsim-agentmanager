@@ -82,7 +82,14 @@ export default class Conditions{
     get stats(){
         let c = this.conditionsByType;
         // calc stats
-        return Object.keys( c ).map(k=>c[k]);
+        return Object.keys( c ).reduce((p,k)=>{
+            p[k] = {
+                conditions: c[k].list,
+                severity: c[k].severity,
+                level: c[k].level
+            };
+            return p;
+        },{});
     }
 
     static get getConditions(){return CONDITIONS;}

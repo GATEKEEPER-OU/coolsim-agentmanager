@@ -9,7 +9,6 @@ const Time = Utils.time;
 // agents get the daily list and choose which actions to carry on and which not
 // class Actions.remind() returns a list of suggested actions of the day
 // class Actions.outcomes() returns the outcome of performed and skipped actions
-
 export default class Actions {
     HOURS = 24;
     ACTIONS = ACTIONS;

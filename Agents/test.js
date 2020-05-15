@@ -8,4 +8,4 @@ a.dailyRoutine();
 b.dailyRoutine();
 
 
-// console.log("agent",a);
+console.log("agent",a.getDescription);

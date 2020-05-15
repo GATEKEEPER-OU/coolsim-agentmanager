@@ -1,153 +1,102 @@
-import Utils from '../../Utils/index.js';
-// agent's states
-// state: ['active','independent','dependent','death']
-// label: name and key
-// decline / improve {from: [array of states], factors}
-//      factors: [array ] {factor, type, severity, rate}
-//          factor: 'condition', 'age'
-//          type: of condition or null for age
-//          severity: float for condition, integer (age)
-//          rate: probability to get caught in this new state
-//      expected use: decline: > severity, improve < severity
-// limit: age to skipp to the next state
-// conditions: list of conditions to trigger this status
-//          {state,type,severity,rate}
-//          type: ['mental','social','physical','behavioural']
-// rate: probability of having a state
-// type (optional): default, rate = 1 - sum of all other
-
+import Bootstrap from "../../Bootstrap/index.js";
+import Utils from "../../Utils/index.js";
+import _ from "lodash";
 const Rate = Utils.rate;
 
 
-let STATUS = [
-    {label:'death',rate:0, type:"final",
-        decline:{
-            from:['active','independent','dependent'],
-            factors: [
-                {
-                    factor:'condition',
-                    type: 'physical',
-                    severity: 0.7,
-                    rate:0.005
-                },
-                {
-                    factor:'age',
-                    type:null,
-                    severity: 70,
-                    rate:0.001
-                },
-                {
-                    factor:'age',
-                    type:null,
-                    age: 80,
-                    rate:0.005
-                },
-                {
-                    factor:'age',
-                    type:null,
-                    age: 100,
-                    rate:0.01
-                },
-            ]
-        }
-    },
-    {label:'dependent',limit:120,rate:0.1,
-        decline: {
-            from:['active','independent'],
-            factors: [
-                {
-                    factor:'condition',
-                    type: 'physical',
-                    severity: 0.9,
-                    rate: 0.01
-                },
-                {
-                    factor:'condition',
-                    type: 'behavioural',
-                    severity: 7,
-                    rate: 0.005
-                },
-                {
-                    factor:'condition',
-                    type: 'mental',
-                    severity: 7,
-                    rate: 0.01
-                },
-                {
-                    factor:'age',
-                    type:null,
-                    age: 80,
-                    rate:0.5
-                },
-                {
-                    factor:'age',
-                    type:null,
-                    age: 100,
-                    rate:1
-                },
-            ]
-        }
-    },
-    {label:'independent',limit:120,rate:0.3,
-        improve:{
-            from:['dependent'],
-            factors: [
-                {
-                    factor:'condition',
-                    type: 'mental',
-                    severity: 0.5,
-                    rate:0.01
-                }
-            ]
-        },
-        decline: {
-            from:['active'],
-            factors: [
-                {
-                    factor:'condition',
-                    type: 'behavioural',
-                    severity: 7,
-                    rate: 0.01
-                },
-                {
-                    factor:'condition',
-                    type: 'social',
-                    severity: 7,
-                    rate: 0.01
-                },
-                {
-                    factor:'age',
-                    type: null,
-                    severity: 70,
-                    rate: 0.1
-                },
+export default class Status{
+    STATUS = Bootstrap.user.STATUS;
 
-            ]
-        }
-    },
-    {label:'active',limit:120,type:'default', prev:['independent'],
-        improve: {
-            from: ['independent'],
-            factors: [
-                {
-                    factor:'condition',
-                    type: 'mental',
-                    severity: 0.3,
-                    rate: 0.01
-                },
-                {
-                    factor:'condition',
-                    type: 'mental',
-                    severity: 0.3,
-                    rate: 0.01
-                },
-            ]
-        }
+
+
+    constructor(status){
+        this.current = status;
+
+        this.final = status;
     }
-];
 
-// calc default
-STATUS = Rate.defaultRate(STATUS);
+    check(age,conditions = []){
+        if(!age && isNaN(age)){throw new Error(`Age mandatory, got ${age}`)}
+        if(!conditions && !Array.isArray(conditions)){throw new Error(`Conditions mandatory, got ${conditions}`)}
+
+        if(this.final){
+            return
+        }
+
+        // console.log(`check status from being "${current}" among the list \n`,STATUS);
+        // get list of status which allow current status to transit from
+        let declineList = this.STATUS
+            .filter(e => this._checkFrom(e,'decline',this.current) )
+            .filter(e => this._checkFactors(e.decline.factors) );
+        // console.log(`Am i declining?\n`,declineList);
+
+        let improveList = this.STATUS
+            .filter(e => this._checkFrom(e,'improve',this.current) )
+            .filter(e => this._checkFactors(e.improve.factors) );
+        // console.log(`Am i improving?\n`,improveList);
+
+        // check decline
+        if(declineList.length > 0){
+            this.current = declineList[0];
+        }
+        // check improvement
+        else if(improveList.length > 0){
+            this.current = improveList[0];
+        }
 
 
-export default STATUS;
+        return this.current;
+    }
+
+
+    set current(status){
+        if(this.final){return}
+
+        if(!status){
+            this._current = Rate.pickOne(this.STATUS);
+        } else {
+            let r = _.find(this.STATUS,["label",status]);
+            if(!r){
+                throw new Error(`Unknown status ${status}`)
+            }
+            this._current = r;
+        }
+
+        this.final = this._current;
+    }
+    get current(){
+        return this._current.label;
+    }
+
+
+    set final(status){
+        this._final = (status.type && status.type === "final") || false;
+    }
+    get final(){
+        return this._final;
+    }
+
+    _checkFrom(e,field,status){
+        // same state
+        if(e.label === status){return false;}
+        // check it is a decline and include current state in the from list
+        if(!e || !e[field] || !e[field].from){
+            return false;
+        }
+        return new Set(e[field].from).has(status);
+    }
+
+    _checkFactors(factors,age,conditions=[]){
+        return factors.reduce((partial,f)=>{
+            // check requirements
+            if(f.factor === 'age' && age < f.severity){
+                return false;
+            }else if(f.type === 'condition' && !_.find(conditions,["label",f.type]) ){
+                return false;
+            }
+            // test rate
+            return (partial && Rate.test(f.rate) );
+
+        },true);
+    }
+}
