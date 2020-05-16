@@ -88,7 +88,6 @@ export default class Agent{
         // status helper
         this.statusHelper = new Status(this.status);
 
-
         // todo check which monitoring system apply
         // generate a list using rates
 
@@ -118,6 +117,7 @@ export default class Agent{
             simulation: this.simulation,
             day:this.day,
             role:this.role,
+            final:this.final,
             skills: this.skills,
             status: this.statusHelper.current,
             yearOfBirth: this.yearOfBirth,
@@ -136,7 +136,7 @@ export default class Agent{
             // console.log("4",this.final);
             // check if the agent closed its lifecycle
             if(this.final){
-                reject({status:this.status,final:true,id:this.id});
+                resolve({status:this.status,final:true,id:this.id});
             }
             // console.log("5");
             let eventsOutcomes = this._evaluateEvents(events);
@@ -150,7 +150,7 @@ export default class Agent{
 
             // daily actions
             let {choices, actionsOutcomes} = this._dailyActions(this.conditions,time);
-
+            time += actionsOutcomes.time;
 
             // todo visits
 
@@ -174,6 +174,7 @@ export default class Agent{
                 agent:this.id,
                 day:this.day,
                 time,
+                final:this.final,
                 events:{
                     list: events.map(e=>e.label),
                     outcomes:{
@@ -196,6 +197,7 @@ export default class Agent{
                     outcomes: Utils.mapToObject(emergingConditions)
                 }
             };
+
             // console.log("11",day);
             this._log(day);
             resolve(day);

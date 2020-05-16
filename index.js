@@ -3,72 +3,73 @@ import Bootstrap from "../Bootstrap/index.js";
 import Store from "../Store/index.js";
 import * as _ from "lodash";
 import uniqid from "uniqid";
+import Task from 'task.js';
 import Utils from "../Utils/index.js";
 const Time = Utils.time;
 
 export default class Agents{
-    constructor({simulation = uniqid("sim-")}){
+
+    CONCURRENCY_LIMIT = 800;
+
+    constructor({
+                    simulation = uniqid("sim-"),
+                    speed = "hour",
+                    sync = true,
+                    store = null
+    }){
         this.agents = [];
-        this.finals = [];
         this.simulation = simulation.toString();
-        this.store = new Store("simulation",{simulation:this.simulation});
+        this.store = store;
         this.day = 0;
-        // todo create clock
-        this.clock = new Time.Clock('hour');
+        this.sync = sync;
+        // create clock
+        this.clock = new Time.Clock(speed);
+
+
     }
 
     get list(){
         return this.agents;
     }
 
-
+    // runs the day for all agents, then saves on the store a summary
+    // delays waiting for the next day
     async run(events = []){
 
-        return this._run(events).then(async res=>{
-            // wait for the clock to finish
-            await this._tillTomorrow();
-            return res;
-        });
+        this.day++;
 
-    }
-
-    _run(events){
-        // console.log("1",events);
-        return new Promise( async (resolve, reject)=> {
-            let agtPromises = [];
-            // console.log("2",this.agents);
-            this.agents.forEach(agt => {
-                agtPromises.push(agt.dailyRoutine(events));
-            });
-            Promise.allSettled(agtPromises).then( async results=>{
-                // console.log("results of the day",results);
-                // prepare summary
-                let summary = results.map(result=>{
-                    let {value, status} = result;
-                    let r = {
-                        agent: value.agent,
-                        status: value.state.status,
-                    };
-                    // console.log("report",r);
-                    // check if agent reached its final state, e.g. death
-                    if(value.state.status.type === "final" || status !== "fulfilled"){
-                        // exclude agent that are final form the list
-                        this._toFinal(value.agent);
-                    }
-                    return r;
-                });
-
-                let doc = {
-                    summary,
+        let runPromise = this._run(events).then(async res=>{
+            // if store is defined, then save
+            if(this.store){
+                await this.store.save({
+                    simulation: this.simulation,
                     day: this.day,
-                    simulation:this.simulation
-                };
-                await this.store.save("details",doc);
-                this.day++;
-                resolve(summary);
-            }).catch(err=>reject(err));
-        });
+                    results: res
+                });
+            }
+
+            return res;
+        }).catch(err=>console.error("Error run",err));
+
+        return Promise.allSettled([
+            // wait for the clock to finish
+            this._tillTomorrow(),
+            runPromise
+        ]).then(async res=>{
+            let summary = res.reduce((p,{status,value})=>{
+                if(status !== "fulfilled"){return p;}
+                if(value === "tomorrow"){return p;}
+                return value;
+            });
+            if(!summary){
+                throw new Error("Error: no summary of the day");
+            }
+            // console.log("summary",summary);
+            return summary;
+        })
+
     }
+
 
 
 
@@ -77,7 +78,6 @@ export default class Agents{
         let agents = [];
 
         for(let i = 0; i < num; i++){
-            // todo gender & age distribution
 
             let agent = await this._init(
                 {simulation:this.simulation},
@@ -118,18 +118,88 @@ export default class Agents{
     }
 
     // remove an agent from agents and places it in the final list
-    _toFinal(id){
+    set finals(id){
+        if(!this._finals){this._finals = [];}
         // remove by id
-        this.finals.concat(_.remove(this.agents, (e)=>e.id===id));
+        this._finals.concat(_.remove(this.agents, (e)=>e.id===id));
+    }
+    get finals(){
+        return this._finals;
     }
 
     // returns a promise that is resolved tomorrow
     _tillTomorrow(){
+        // if sync with the clock disabled, then return a resolved promise
+        if(!this.sync){return Promise.resolve()}
+
+        // returns a promise which is resolved at the end of the day
         // console.log("wait until",this.clock.tillTomorrow);
         return new Promise(resolve=>{
+            // console.log("waiting for...",this.clock.tillTomorrow);
             setTimeout(()=>{ resolve("tomorrow") },
                 this.clock.tillTomorrow);
         })
+    }
+
+
+    // runs all agents balancing the number of parallel processes
+    async _run(events) {
+        const total = this.agents.length;
+        // Enhance arguments array to have an index of the argument at hand
+        const args = Array(total).fill().map((_, index) => ({ index }));
+
+        const result = new Array(total);
+        const promises = new Array(this.CONCURRENCY_LIMIT);
+        // console.log("asd",argsCopy);
+
+
+        const daily = async (arg) => {
+            return this.agents[arg.index].dailyRoutine(events)
+                .then(r => {
+                    // update results
+                    result[arg.index] = r;
+                    // if this is the last day
+                    if(r.final){
+                        this.finals = r.id;
+                    }
+                } ).catch(err=>console.error(err));
+        };
+        const chainNext = async (p) => {
+            // console.log(argsCopy.length);
+            if (args.length) {
+                const arg = args.shift();
+                return p.then(() => {
+                    // Store the result into the array upon Promise completion
+                    const operationPromise = daily(arg);
+
+                    return chainNext(operationPromise);
+                }).catch(err=>console.error(err));
+            }
+            return p;
+        };
+
+
+
+
+        // init first batch saturating the limit for concurrency
+        for(let i =0; i < this.CONCURRENCY_LIMIT; i++){
+            if (args.length) {
+                let arg = args.shift();
+
+                promises[arg.index] = daily(arg);
+            }
+        }
+
+        try{
+            await Promise.allSettled(promises.map(chainNext));
+            // console.log("end of run",result);
+            return result;
+
+        }catch (err){
+            console.error("ERROR _run",err);
+            throw new Error(err);
+        }
+
     }
 
 }

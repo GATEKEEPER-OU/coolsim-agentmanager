@@ -37,11 +37,13 @@ export default class Status{
 
         // check decline
         if(declineList.length > 0){
-            this.current = declineList[0];
+            // console.log("decline",declineList[0].label);
+            this.current = declineList[0].label;
         }
         // check improvement
         else if(improveList.length > 0){
-            this.current = improveList[0];
+            // console.log("improvement",improveList[0].label);
+            this.current = improveList[0].label;
         }
 
 
@@ -51,7 +53,7 @@ export default class Status{
 
     set current(status){
         if(this.final){return}
-
+        // console.log("~",status);
         if(!status){
             this._current = Rate.pickOne(this.STATUS);
         } else {
