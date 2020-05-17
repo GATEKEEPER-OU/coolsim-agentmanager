@@ -1,5 +1,7 @@
-import ACTIONS from './actions.js';
+import Bootstrap from '../../Bootstrap/index.js';
 import Utils from '../../Utils/index.js';
+
+const ACTIONS = Bootstrap.user.ACTIONS;
 
 const Costs = Utils.cost;
 const Rate = Utils.rate;

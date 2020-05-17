@@ -23,7 +23,9 @@
 // can result in an increasing risk of new conditions
 
 import Utils from '../../Utils/index.js';
-import CONDITIONS from './conditions.js';
+import Bootstrap from "../../Bootstrap/index.js";
+
+const CONDITIONS = Bootstrap.user.CONDITIONS;
 
 const Costs = Utils.cost;
 const Rate = Utils.rate;
