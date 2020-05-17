@@ -1,9 +1,7 @@
 import Agent from "./Agents/index.js";
-import Bootstrap from "../Bootstrap/index.js";
 import Store from "../Store/index.js";
 import * as _ from "lodash";
 import uniqid from "uniqid";
-import Task from 'task.js';
 import Utils from "../Utils/index.js";
 const Time = Utils.time;
 
@@ -15,11 +13,16 @@ export default class Agents{
                     simulation = uniqid("sim-"),
                     speed = "hour",
                     sync = true,
-                    store = null
+                    save = false
     }){
         this.agents = [];
         this.simulation = simulation.toString();
-        this.store = store;
+        if(save){
+            this.store = {
+                details :  new Store({type:"details", simulation:this.simulation})
+            };
+        }
+
         this.day = 0;
         this.sync = sync;
         // create clock
@@ -41,10 +44,31 @@ export default class Agents{
         let runPromise = this._run(events).then(async res=>{
             // if store is defined, then save
             if(this.store){
-                await this.store.save({
+                await this.store.details.save({
                     simulation: this.simulation,
                     day: this.day,
-                    results: res
+                    results: res.reduce((r,v)=>{
+                        let {status,age,final,stats} = v;
+
+                        // final
+                        if(final){r.final++;}
+                        // status
+                        if(!r[status]){
+                            r[status] = 1;
+                        }else{ r[status]++; }
+
+                        r.age += age/res.length;
+
+                        // stats
+                        Object.keys(stats).forEach(e=>{
+                            if(!r.stats){ r.stats = {};}
+                            if(!r.stats[e]){ r.stats[e] = 0; }
+
+                            r.stats[e] += stats[e].level/res.length;
+                        });
+
+                        return r;
+                    },{final:0,age:0})
                 });
             }
 
@@ -91,22 +115,76 @@ export default class Agents{
     }
 
 
-    async getData(){
-        return this.store.readBySection("details");
+    async journal(){
+        if(this.store){
+            return this.store.read();
+        }
+        return Promise.reject("Don't keep a journal, sorry");
     }
 
     async closeUp() {
         // closeup simulation and agents
-        let agtPromises = [];
-        this.agents.forEach(agt => {
-            agtPromises.push(agt.closeUp());
-        });
+        let promises = [this._closeUpAgents()];
+
+        if(this.store){
+            promises.concat(Object.keys(this.store).map(e=> this.store[e].cleanUp({simulation:this.simulation}) ));
+        }
+
         // returns a combined promise of all agent and simulation
-        return Promise.allSettled([
-            this.store.cleanUp({simulation:this.simulation}),
-            Promise.allSettled(agtPromises)
-        ]);
+        return Promise.allSettled(promises).catch(err=>console.error(err));
     }
+
+
+    async _closeUpAgents(){
+        const total = this.agents.length;
+        // Enhance arguments array to have an index of the argument at hand
+        const args = Array(total).fill().map((_, index) => ({ index }));
+
+        const result = new Array(total);
+        const promises = new Array(this.CONCURRENCY_LIMIT);
+        // console.log("asd",argsCopy);
+
+
+        const task = async (arg) => {
+            return this.agents[arg.index].closeUp();
+        };
+
+        const chainNext = async (p) => {
+            // console.log(argsCopy.length);
+            if (args.length) {
+                const arg = args.shift();
+                return p.then(() => {
+                    // Store the result into the array upon Promise completion
+                    const operationPromise = task(arg);
+
+                    return chainNext(operationPromise);
+                }).catch(err=>console.error(err));
+            }
+            return p;
+        };
+
+        // init first batch saturating the limit for concurrency
+        for(let i =0; i < this.CONCURRENCY_LIMIT; i++){
+            if (args.length) {
+                let arg = args.shift();
+
+                promises[arg.index] = task(arg);
+            }
+        }
+
+        try{
+            await Promise.allSettled(promises.map(chainNext));
+            // console.log("end of run",result);
+            return result;
+
+        }catch (err){
+            console.error("ERROR _closeUpAgents",err);
+            throw new Error(err);
+        }
+    }
+
+
+
     // init one user
     async _init(agent,clock,board) {
 
@@ -177,9 +255,6 @@ export default class Agents{
             }
             return p;
         };
-
-
-
 
         // init first batch saturating the limit for concurrency
         for(let i =0; i < this.CONCURRENCY_LIMIT; i++){

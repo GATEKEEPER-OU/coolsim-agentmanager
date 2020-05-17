@@ -163,7 +163,6 @@ export default class Agent{
             this.final = this.statusHelper.final;
 
 
-
             // console.log("10",newStatus);
             // update days counter
             this.day ++;
@@ -172,9 +171,13 @@ export default class Agent{
             // logs the day
             let day = {
                 agent:this.id,
+                age: this.age,
+                status: this.statusHelper.current,
                 day:this.day,
                 time,
                 final:this.final,
+                simulation: this.simulation,
+                stats: this.stats,
                 events:{
                     list: events.map(e=>e.label),
                     outcomes:{
@@ -204,7 +207,9 @@ export default class Agent{
         });
     }
 
-
+    async closeUp(){
+        return Promise.resolve();
+    }
 
 
     _evaluateEvents(events){

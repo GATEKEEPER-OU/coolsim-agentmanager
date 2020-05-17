@@ -1,18 +1,12 @@
 import Agents from "./index.js";
-import Task from "task.js";
 
-
-
-runs(100000,365);
+runs(2000,365);
 
 
 async function runs(users,days) {
     console.time("All activities");
-    let a = new Agents({simulation:123, speed:"day", sync:false});
-    let t = new Task({
-        maxWorkers:8,
-        workerTaskConcurrency: 1
-    });
+    let a = new Agents({simulation:123, speed:"day", save:true, sync:false});
+
     try {
         console.time("user generation");
         await a.init(users);
@@ -22,9 +16,13 @@ async function runs(users,days) {
             console.time(`Day ${day+1}`);
             let summary = await a.run();
             console.timeEnd(`Day ${day+1}`);
-            console.log(`Collected reports from ${summary.length} agents`);
         }
         console.timeEnd("simulation");
+
+        console.time("clean-up");
+        a.closeUp();
+        console.timeEnd("clean-up");
+
         // let d = await a.getData();
         // console.log("local data",d.length);
         // await a.closeUp();
