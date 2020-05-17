@@ -1,4 +1,4 @@
-import Agent from "./Agents/index.js";
+import Agent from "./Agent/index.js";
 import Store from "../Store/index.js";
 import * as _ from "lodash";
 import uniqid from "uniqid";
@@ -47,6 +47,7 @@ export default class Agents{
                 await this.store.details.save({
                     simulation: this.simulation,
                     day: this.day,
+                    events,
                     results: res.reduce((r,v)=>{
                         let {status,age,final,stats} = v;
 
@@ -55,7 +56,9 @@ export default class Agents{
                         // status
                         if(!r[status]){
                             r[status] = 1;
-                        }else{ r[status]++; }
+                        }else{
+                            r[status]++;
+                        }
 
                         r.age += age/res.length;
 
@@ -63,7 +66,6 @@ export default class Agents{
                         Object.keys(stats).forEach(e=>{
                             if(!r.stats){ r.stats = {};}
                             if(!r.stats[e]){ r.stats[e] = 0; }
-
                             r.stats[e] += stats[e].level/res.length;
                         });
 
