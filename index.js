@@ -17,11 +17,8 @@ export default class Agents{
     }){
         this.agents = [];
         this.simulation = simulation.toString();
-        if(save){
-            this.store = {
-                details :  new Store({type:"details", simulation:this.simulation})
-            };
-        }
+        this.save = save;
+
 
         this.day = 0;
         this.sync = sync;
@@ -30,6 +27,7 @@ export default class Agents{
 
 
     }
+
 
     get list(){
         return this.agents;
@@ -44,34 +42,45 @@ export default class Agents{
         let runPromise = this._run(events).then(async res=>{
             // if store is defined, then save
             if(this.store){
-                await this.store.details.save({
-                    simulation: this.simulation,
-                    day: this.day,
-                    events,
-                    results: res.reduce((r,v)=>{
-                        let {status,age,final,stats} = v;
+                try {
+                    await this.store.details.save({
+                        _id: this.simulation + "-day-" + this.day,
+                        simulation: this.simulation,
+                        day: this.day,
+                        events,
+                        results: res.reduce((r, v) => {
+                            let {status, age, final, stats} = v;
 
-                        // final
-                        if(final){r.final++;}
-                        // status
-                        if(!r[status]){
-                            r[status] = 1;
-                        }else{
-                            r[status]++;
-                        }
+                            // final
+                            if (final) {
+                                r.final++;
+                            }
+                            // status
+                            if (!r[status]) {
+                                r[status] = 1;
+                            } else {
+                                r[status]++;
+                            }
 
-                        r.age += age/res.length;
+                            r.age += age / res.length;
 
-                        // stats
-                        Object.keys(stats).forEach(e=>{
-                            if(!r.stats){ r.stats = {};}
-                            if(!r.stats[e]){ r.stats[e] = 0; }
-                            r.stats[e] += stats[e].level/res.length;
-                        });
+                            // stats
+                            Object.keys(stats).forEach(e => {
+                                if (!r.stats) {
+                                    r.stats = {};
+                                }
+                                if (!r.stats[e]) {
+                                    r.stats[e] = 0;
+                                }
+                                r.stats[e] += stats[e].level / res.length;
+                            });
 
-                        return r;
-                    },{final:0,age:0})
-                });
+                            return r;
+                        }, {final: 0, age: 0})
+                    });
+                }catch (err){
+                    console.error("Error saving agents' day",err);
+                }
             }
 
             return res;
@@ -101,6 +110,15 @@ export default class Agents{
 
     // return array of agents
     async init(num,clock,board){
+
+        if(this.save){
+            let store = await new Store({type:"diary", simulation:this.simulation});
+            // console.log("store",store);
+            this.store = {
+                details :  store
+            };
+        }
+
         let agents = [];
 
         for(let i = 0; i < num; i++){
