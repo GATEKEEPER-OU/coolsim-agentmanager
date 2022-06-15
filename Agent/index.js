@@ -25,7 +25,7 @@ import uniqid from 'uniqid';
 import Actions from '../Actions/index.js';
 import Conditions from '../Conditions/index.js';
 import Interact from "../Interact/index.js";
-import Utils from '../../coolsim-utilities/index.js';
+import Utils from '../../utilities/index.js';
 import Profile from "./profile.js";
 import Status from "./status.js";
 

@@ -1,8 +1,8 @@
 import Agent from "./Agent/index.js";
-import Store from "../coolsim-store/index.js";
+import Store from "../store/index.js";
 import * as _ from "lodash";
 import uniqid from "uniqid";
-import Utils from "../coolsim-utilities/index.js";
+import Utils from "../utilities/index.js";
 const Time = Utils.time;
 
 export default class Agents{
