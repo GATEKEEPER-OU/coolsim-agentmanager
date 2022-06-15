@@ -1,10 +1,10 @@
 {
-  "name": "Simulator",
+  "name": "coolsim-agentmanager",
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
   "dependencies": {
-    "axios": "^0.19.2",
+    "axios": "^0.27.2",
     "lodash": "^4.17.15",
     "moment": "^2.24.0",
     "nano": "^8.2.2",
@@ -16,20 +16,19 @@
     "uniqid": "^5.2.0",
     "util": "^0.12.2"
   },
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/DrPollo/Communit-Planner-Simulator.git"
+    "url": "git+https://github.com/GATEKEEPER-OU/coolsim-agentmanager.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/DrPollo/Communit-Planner-Simulator/issues"
+    "url": "https://github.com/GATEKEEPER-OU/coolsim-agentmanager/issues"
   },
-  "homepage": "https://github.com/DrPollo/Communit-Planner-Simulator#readme",
+  "homepage": "https://github.com/GATEKEEPER-OU/coolsim-agentmanager#readme",
   "type": "module"
 }

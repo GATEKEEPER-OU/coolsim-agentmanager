@@ -1,5 +1,5 @@
-import Bootstrap from "../../Bootstrap/index.js";
-import Utils from "../../Utils/index.js";
+import Bootstrap from "../../coolsim-configuration/index.js";
+import Utils from "../../coolsim-utilities/index.js";
 import _ from "lodash";
 const Rate = Utils.rate;
 

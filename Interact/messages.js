@@ -1,7 +1,7 @@
 // Messages is used to enable the agent to communicate within an area
 // Messages takes the agent events and translates it to messages for the billboard
 
-import Billboard from "../../Utils/Messages/billboard.js";
+import Billboard from "../../coolsim-utilities/Messages/billboard.js";
 
 export default class Messages{
     constructor(billboard){

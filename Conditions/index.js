@@ -22,8 +22,8 @@
 // the permanence within a low, mild or sever level or the condition
 // can result in an increasing risk of new conditions
 
-import Utils from '../../Utils/index.js';
-import Bootstrap from "../../Bootstrap/index.js";
+import Utils from '../../coolsim-utilities/index.js';
+import Bootstrap from "../../coolsim-configuration/index.js";
 
 const CONDITIONS = Bootstrap.user.CONDITIONS;
 
