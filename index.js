@@ -43,7 +43,7 @@ export default class Agents{
             // if store is defined, then save
             if(this.store){
                 try {
-                    await this.store.details.save({
+                    const summaryOfDay= {
                         _id: this.simulation + "-day-" + this.day,
                         simulation: this.simulation,
                         day: this.day,
@@ -76,8 +76,13 @@ export default class Agents{
                             });
 
                             return r;
-                        }, {final: 0, age: 0})
-                    });
+                        }, {final: 0, age: 0}),
+                        // agentsStatus: res
+                    };
+                    // console.log(summaryOfDay);
+                    // await this.store.details.save(summaryOfDay);
+                    // console.log(summaryOfDay);
+                    await this.store.details.save(res);
                 }catch (err){
                     console.error("Error saving agents' day",err);
                 }
