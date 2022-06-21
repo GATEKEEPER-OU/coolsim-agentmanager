@@ -77,6 +77,7 @@ export default class Conditions{
         return conds;
     }
     get status (){
+        // console.log("conditions helper, status",Array.from(this.conditionsMap.values()))
         return Array.from(this.conditionsMap.values());
     };
     get types(){return Array.from(this.conditionTypes)}
